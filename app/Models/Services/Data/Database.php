@@ -8,7 +8,7 @@ class Database{
     private $dbservername = "localhost";
     private $dbusername = "root";
     private $dbpassword = "root";
-    private $dbname = "calc";
+    private $dbname = "networkingdb";
     
     function getConnection(){
         $conn = new mysqli($this->dbservername, $this->dbusername, $this->dbpassword, $this->dbname);
