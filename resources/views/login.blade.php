@@ -1,7 +1,10 @@
-<div class="container">
-	<h2>Login</h2>
+@extends('layouts.appmaster') 
+@section('title', 'Account Login')
 
-	<form action="processLogin" method="POST">
+@section('content')
+<h2>Login Form</h2>
+
+<form action="processLogin" method="POST">
 		<input type="hidden" name="_token" value="<?php echo csrf_token()?>" />
 
 		<div class="form-group">
@@ -15,11 +18,6 @@
 				class="form-control" id="password" placeholder="Password"
 				name="password">
 		</div>
-		
-		<div class="form-group">
-			<input type="hidden" class="form-control" id="role"
-				value=1 name="role">
-		</div>
 
 		<button type="submit" class="btn btn-dark">Submit</button>
 
@@ -27,4 +25,5 @@
 	
 	<a href="register">Register</a>
 
-</div>
+<a href="login">Login</a>
+@endsection

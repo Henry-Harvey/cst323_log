@@ -2,8 +2,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Exception;
 use App\Models\Services\Business\UserBusinessService;
-use App\Models\User;
+use App\Models\UserModel;
+use App\Models\CredentialsModel;
 
 class AccountController extends Controller
 {
@@ -19,40 +22,78 @@ class AccountController extends Controller
      *            Implicit request
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
      */
-    public function register(Request $request)
+    public function onRegister(Request $request)
     {
-        $firstname = $request->input('firstname');
-        $lastname = $request->input('lastname');
-        $username = $request->input('username');
-        $password = $request->input('password');
+        Log::info("Entering AccountController.onRegister()");
+        try {
+            $username = $request->input('username');
+            $password = $request->input('password');
 
-        $u = new User(0, $firstname, $lastname, $username, $password, 0);
-        $bs = new UserBusinessService();
+            $first_name = $request->input('firstname');
+            $last_name = $request->input('lastname');
+            $location = $request->input('location');
+            $summary = $request->input('summary');
 
-        if ($bs->newUser($u)) {
-            return view('login');
-        } else {
-            return view('register');
+            $c = new CredentialsModel(0, $username, $password);
+
+            $u = new UserModel(0, $first_name, $last_name, $location, $summary, 0, 0);
+
+            $bs = new UserBusinessService();
+
+            $flag = $bs->register($c, $u);
+
+            Log::info("Exiting AccountController.onRegister() with " . $flag);
+            if ($flag == 1) {
+                return view('login');
+            } else {
+                return view('register');
+            }
+        } catch (Exception $e) {
+            Log::error("Exception ", array(
+                "message" => $e->getMessage()
+            ));
+            $data = [
+                'errorMsg' => $e->getMessage()
+            ];
+            return view('exception')->with($data);
         }
     }
 
-    public function login(Request $request)
+    public function onLogin(Request $request)
     {
-        $username = $request->input('username');
-        $password = $request->input('password');
+        Log::info("Entering AccountController.onLogin()");
+        try {
+            $username = $request->input('username');
+            $password = $request->input('password');
 
-        $bs = new UserBusinessService();
-        if($bs->login($username, $password)){
-            return view('home');          
-        }
-        else{
-            return view('login');
-        }
+            $c = new CredentialsModel(0, $username, $password);
 
+            $bs = new UserBusinessService();
+
+            $flag = $bs->login($c);
+
+            Log::info("Exiting AccountController.onLogin() with " . $flag);
+            if ($flag != null) {
+                session_start();
+                $_SESSION['user_id'] = $flag;
+                
+                return view('home');
+            } else {
+                return view('login');
+            }
+        } catch (Exception $e) {
+            Log::error("Exception ", array(
+                "message" => $e->getMessage()
+            ));
+            $data = [
+                'errorMsg' => $e->getMessage()
+            ];
+            return view('exception')->with($data);
+        }
     }
 
     // not used yet
-    public function logout()
+    public function onLogout()
     {
         $bs = new UserBusinessService();
         $bs->logout();

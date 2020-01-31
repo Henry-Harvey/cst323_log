@@ -3,82 +3,94 @@
 namespace App\Models;
 
 // product class
-class User{
+class UserModel{
     
     private $id;
     private $first_name;
     private $last_name;
-    private $username;
-    private $password;
+    private $location;
+    private $summary;
     private $role;
+    private $credentials_id;
     
-    function __construct($id, $first_name, $last_name, $username, $password, $role){
+    function __construct($id, $first_name, $last_name, $location, $summary, $role, $credentials_id){
         $this->id = $id;
         $this->first_name = $first_name;
         $this->last_name = $last_name;
-        $this->username = $username;
-        $this->password = $password;
+        $this->location = $location;
+        $this->summary = $summary;
         $this->role = $role;
+        $this->credentials_id = $credentials_id;
     }
     
     public function getId()
     {
         return $this->id;
     }
-    
+
     public function getFirst_name()
     {
         return $this->first_name;
     }
-    
+
     public function getLast_name()
     {
         return $this->last_name;
     }
-    
-    public function getUsername()
+
+    public function getLocation()
     {
-        return $this->username;
+        return $this->location;
     }
-    
-    public function getPassword()
+
+    public function getSummary()
     {
-        return $this->password;
+        return $this->summary;
     }
-    
+
     public function getRole()
     {
         return $this->role;
     }
-    
+
+    public function getCredentials_id()
+    {
+        return $this->credentials_id;
+    }
+
     public function setId($id)
     {
         $this->id = $id;
     }
-    
+
     public function setFirst_name($first_name)
     {
         $this->first_name = $first_name;
     }
-    
+
     public function setLast_name($last_name)
     {
         $this->last_name = $last_name;
     }
-    
-    public function setUsername($username)
+
+    public function setLocation($location)
     {
-        $this->username = $username;
+        $this->location = $location;
     }
-    
-    public function setPassword($password)
+
+    public function setSummary($summary)
     {
-        $this->password = $password;
+        $this->summary = $summary;
     }
-    
+
     public function setRole($role)
     {
         $this->role = $role;
     }
-    
+
+    public function setCredentials_id($credentials_id)
+    {
+        $this->credentials_id = $credentials_id;
+    }
+
 }
