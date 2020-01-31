@@ -22,7 +22,7 @@ Route::get('/login', function () {
 });
 
     // Route for calling the login method from the controller
-Route::post('/processLogin', 'AccountController@login');
+Route::post('/processLogin', 'AccountController@onLogin');
 
 // Route for naviagting to the register form with a specific url
 Route::get('/register', function () {
@@ -30,7 +30,7 @@ Route::get('/register', function () {
 });
 
 // Route for calling the register method from the controller
-Route::post('/processRegister', 'AccountController@register');
+Route::post('/processRegister', 'AccountController@onRegister');
 
 // Route for navigating to the result page
 Route::get('/home', function () {
@@ -38,4 +38,4 @@ Route::get('/home', function () {
 });
 
 // Route for calling the logout method from the controller
-Route::post('/processLogout', 'AccountController@logout');
+Route::post('/processLogout', 'AccountController@onLogout');
