@@ -21,7 +21,7 @@ Route::get('/login', function () {
     return view('login');
 });
 
-    // Route for calling the login method from the controller
+// Route for calling the login method from the controller
 Route::post('/processLogin', 'AccountController@onLogin');
 
 // Route for naviagting to the register form with a specific url
@@ -38,4 +38,15 @@ Route::get('/home', function () {
 });
 
 // Route for calling the logout method from the controller
-Route::post('/processLogout', 'AccountController@onLogout');
+Route::get('/processLogout', 'AccountController@onLogout');
+
+
+// Route for navigating to the user profile page
+Route::get('/profile', function () {
+    return view('profile');
+});
+
+// Route for navigating to the admin page
+Route::get('/admin', function () {
+    return view('admin');
+});

@@ -2,6 +2,8 @@
 @section('title', 'Account Login')
 
 @section('content')
+
+@if(!Session::get('user_id'))
 <h2>Login Form</h2>
 
 <form action="processLogin" method="POST">
@@ -24,6 +26,8 @@
 	</form>
 	
 	<a href="register">Register</a>
+@else
+<h2>You are already logged in</h2>
+@endif
 
-<a href="login">Login</a>
 @endsection

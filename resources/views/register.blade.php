@@ -2,6 +2,8 @@
 @section('title', 'Account Registration')
 
 @section('content')
+
+@if(!Session::get('user_id'))
 <h2>Registration Form</h2>
 
 <form action="processRegister" method="POST">
@@ -47,5 +49,10 @@
 
 </form>
 
-<a href="register">Register</a>
+<a href="login">Login</a>
+
+@else
+<h2>You must be logged out to register</h2>
+@endif
+
 @endsection

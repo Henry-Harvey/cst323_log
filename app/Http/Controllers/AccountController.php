@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Exception;
 use App\Models\Services\Business\UserBusinessService;
 use App\Models\UserModel;
@@ -74,8 +75,9 @@ class AccountController extends Controller
 
             Log::info("Exiting AccountController.onLogin() with " . $flag);
             if ($flag != null) {
-                session_start();
-                $_SESSION['user_id'] = $flag;
+                
+                Session::put('user_id', $flag->getId());
+                Session::put('role', $flag->getRole());
                 
                 return view('home');
             } else {
@@ -92,11 +94,10 @@ class AccountController extends Controller
         }
     }
 
-    // not used yet
     public function onLogout()
-    {
-        $bs = new UserBusinessService();
-        $bs->logout();
+    {   
+        Session::forget('user_id');
+        Session::forget('role');
         return view('login');
     }
 }

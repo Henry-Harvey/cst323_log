@@ -23,7 +23,7 @@ class UserBusinessService
         $db = $Database->getDb();
         
         $ds = new UserDataService($db);
-        $flag = $ds->create($newCredentials, $newUser);
+        $flag = $ds->create2($newCredentials, $newUser);
         
         $db = null;
         
@@ -165,11 +165,7 @@ class UserBusinessService
         Log::info("Exiting UserBusinessService.login() with " . $flag);
         return $flag;
     }
-    
-    function logout()
-    {
-        return null;
-    }
+
 }
 
 

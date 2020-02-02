@@ -24,7 +24,7 @@ interface DataServiceInterface
      * @param id	int to find the object
      * @return 	{@link Object}		object that is found
      */
-    function read($id);
+    function read($searchModel);
     
     /**
      * Connects to the database
@@ -56,6 +56,6 @@ interface DataServiceInterface
      * @param id		id of object to be deleted
      * @return 	{@link Boolean}		boolean for success
      */
-    function delete($id);
+    function delete($deleteModel);
 }
 

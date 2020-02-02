@@ -92,5 +92,11 @@ class UserModel{
     {
         $this->credentials_id = $credentials_id;
     }
+    
+    public function __toString()
+    {
+        return "user";
+
+    }
 
 }

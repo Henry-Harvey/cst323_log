@@ -4,11 +4,12 @@
 </head>
 
 <body>
-	@include(layouts._header')
+	@include('layouts._navbar')
+	@include('layouts._header')
 	<div align="center">
 		@yield('content')
 	</div>
-	@include('layouts.footer)
+	@include('layouts._footer')
 </body>
 
 </html>

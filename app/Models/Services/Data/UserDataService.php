@@ -21,19 +21,22 @@ class UserDataService implements DataServiceInterface
      *
      * @see DataServiceInterface create
      */
-    function create($newCredentials, $newUser)
+    function create2($newCredentials, $newUser)
     {
         Log::info("Entering UserDataService.create()");
         try {
+            $username = $newCredentials->getUsername();
+            $password = $newCredentials->getPassword();
+            
             $stmt = $this->db->prepare('INSERT INTO CREDENTIALS
                                         (USERNAME, PASSWORD)
-                                        WHERE USERNAME = :username AND PASSWORD = :password');
-            $stmt->bindParam(':username', $newCredentials->getUsername());
-            $stmt->bindParam(':password', $newCredentials->getPassword());
+                                        VALUES (:username, :password)');
+            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':password', $password);
             $stmt->execute();
 
             // insert into users
-            if ($stmt->affected_rows == 1) {
+            if ($stmt->rowCount() == 1) {
 
                 $first_name = $newUser->getFirst_name();
                 $last_name = $newUser->getLast_name();
@@ -43,7 +46,7 @@ class UserDataService implements DataServiceInterface
 
                 $stmt2 = $this->db->prepare('INSERT INTO USERS
                                         (FIRSTNAME, LASTNAME, LOCATION, SUMMARY, CREDENTIALS_ID)
-                                        WHERE FIRSTNAME = :first_name AND LASTNAME = :last_name AND LOCATION = :location AND SUMMARY = :summary AND CREDENTIALS_ID = :credentials_id');
+                                        VALUES (:first_name, :last_name, :location, :summary, :credentials_id)');
                 $stmt2->bindParam(':first_name', $first_name);
                 $stmt2->bindParam(':last_name', $last_name);
                 $stmt2->bindParam(':location', $location);
@@ -52,8 +55,8 @@ class UserDataService implements DataServiceInterface
                 $stmt2->execute();
             }
 
-            Log::info("Exit SecurityDAO.create() with " . $stmt2->affected_rows);
-            return $stmt2->affected_rows;
+            Log::info("Exit SecurityDAO.create() with " . $stmt2->rowCount());
+            return $stmt2->rowCount();
         } catch (PDOException $e) {
             // catch all excpetions
             // log exception, do not throw technology specific excpetions, throw a custome exception
@@ -92,7 +95,7 @@ class UserDataService implements DataServiceInterface
                 $user = new UserModel($id, $first_name, $last_name, $location, $summary, $role, $credentials_id);
             }
 
-            Log::info("Exiting UserDataService.read() with " . $user . " (" . $stmt->affected_rows . " affected rows)");
+            Log::info("Exiting UserDataService.read() with " . $user . " (" . $stmt->rowCount() . " affected rows)");
             return $user;
         } catch (PDOException $e) {
             // catch all excpetions
@@ -151,18 +154,23 @@ class UserDataService implements DataServiceInterface
     {
         Log::info("Entering UserDataService.update()");
         try {
+            $firstname = $updatedUser->getFirst_name();
+            $lastname = $updatedUser->getLast_name();
+            $location = $updatedUser->getLocation();
+            $summary = $updatedUser->getSummary();
+            
             $stmt = $this->db->prepare('UPDATE USERS
                                         (FIRSTNAME, LASTNAME, LOCATION, SUMMARY)
                                         WHERE FIRSTNAME = :first_name AND LASTNAME = :last_name AND LOCATION = :location AND SUMMARY = :summary');
 
-            $stmt->bindParam(':first_name', $updatedUser->getFirst_name());
-            $stmt->bindParam(':last_name', $updatedUser->getLast_name());
-            $stmt->bindParam(':location', $updatedUser->getLocation());
-            $stmt->bindParam(':summary', $updatedUser->getSummary());
+            $stmt->bindParam(':first_name', $firstname);
+            $stmt->bindParam(':last_name', $lastname);
+            $stmt->bindParam(':location', $location);
+            $stmt->bindParam(':summary', $summary);
             $stmt->execute();
 
-            Log::info("Exit SecurityDAO.update() with " . $stmt->affected_rows);
-            return $stmt->affected_rows;
+            Log::info("Exit SecurityDAO.update() with " . $stmt->rowCount());
+            return $stmt->rowCount();
         } catch (PDOException $e) {
             // catch all excpetions
             // log exception, do not throw technology specific excpetions, throw a custome exception
@@ -181,13 +189,15 @@ class UserDataService implements DataServiceInterface
     {
         Log::info("Entering UserDataService.delete()");
         try {
+            $id = $deleteUser->getId();
+            
             $stmt = $this->db->prepare('DELETE FROM USERS
                                         WHERE ID = :id');
-            $stmt->bindParam(':id', $deleteUser->getId());
+            $stmt->bindParam(':id', $id);
             $stmt->execute();
 
-            Log::info("Exit SecurityDAO.delete() with " . $stmt->affected_rows);
-            return $stmt->affected_rows;
+            Log::info("Exit SecurityDAO.delete() with " . $stmt->rowCount());
+            return $stmt->rowCount();
         } catch (PDOException $e) {
             // catch all excpetions
             // log exception, do not throw technology specific excpetions, throw a custome exception
@@ -212,12 +222,15 @@ class UserDataService implements DataServiceInterface
     {
         Log::info("Entering UserDataService.findByName()");
         try {
+            $firstname = $searchUser->getFirst_name();
+            $lastname = $searchUser->getLast_name();
+            
             $user_array = array();
             $stmt = $this->db->prepare('SELECT * FROM users
                                         WHERE FIRSTNAME = :firstname OR LASTNAME = :lastname');
 
-            $stmt->bindParam(':firstname', $searchUser->getFirst_name());
-            $stmt->bindParam(':lastname', $searchUser->getLast_name());
+            $stmt->bindParam(':firstname', $firstname);
+            $stmt->bindParam(':lastname', $lastname);
             $stmt->execute();
             if ($stmt->rowCount() > 0) {
                 while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -259,16 +272,19 @@ class UserDataService implements DataServiceInterface
     {
         Log::info("Entering UserDataService.authenticate()");
         try {
+            $username = $loginCredentials->getUsername();
+            $password = $loginCredentials->getPassword();
+            
             // check credentials
             $stmt = $this->db->prepare('SELECT * FROM credentials
                                         WHERE USERNAME = :username AND PASSWORD = :password');
 
-            $stmt->bindParam(':username', $loginCredentials->getUsername());
-            $stmt->bindParam(':password', $loginCredentials->getPassword());
+            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':password', $password);
             $stmt->execute();
 
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $credentials_id = $result['CREDENTIALS_ID'];
+                $credentials_id = $result['ID'];
             }
 
             // return user
@@ -281,11 +297,18 @@ class UserDataService implements DataServiceInterface
 
                 while ($result2 = $stmt2->fetch(PDO::FETCH_ASSOC)) {
                     $id = $result2["ID"];
+                    $first_name = $result2['FIRSTNAME'];
+                    $last_name = $result2['LASTNAME'];
+                    $location = $result2['LOCATION'];
+                    $summary = $result2['SUMMARY'];
+                    $role = $result2['ROLE'];
+                    $credentials_id = $result2['CREDENTIALS_ID'];
+                    $user = new UserModel($id, $first_name, $last_name, $location, $summary, $role, $credentials_id);
                 }
             }
 
-            Log::info("Exiting UserDataService.authenticate() with " . $id . " (" . $stmt2->affected_rows . " affected rows)");
-            return $id;
+            Log::info("Exiting UserDataService.authenticate() with " . $user . " (" . $stmt2->rowCount() . " affected rows)");
+            return $user;
         } catch (PDOException $e) {
             // catch all excpetions
             // log exception, do not throw technology specific excpetions, throw a custome exception
@@ -294,5 +317,10 @@ class UserDataService implements DataServiceInterface
             ));
             throw new DatabaseException("Database Exception: " . $e->getMessage(), 0, $e);
         }
+    }
+    
+    // not implemented
+    function create($newUser){
+        
     }
 }
