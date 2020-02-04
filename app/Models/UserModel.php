@@ -1,19 +1,29 @@
 <?php
-
 namespace App\Models;
 
 // product class
-class UserModel{
-    
+class UserModel
+{
+
     private $id;
+
     private $first_name;
+
     private $last_name;
+
     private $location;
+
     private $summary;
+
     private $role;
+
     private $credentials_id;
-    
-    function __construct($id, $first_name, $last_name, $location, $summary, $role, $credentials_id){
+
+    private $credentials;
+
+
+    function __construct($id, $first_name, $last_name, $location, $summary, $role, $credentials_id)
+    {
         $this->id = $id;
         $this->first_name = $first_name;
         $this->last_name = $last_name;
@@ -22,7 +32,7 @@ class UserModel{
         $this->role = $role;
         $this->credentials_id = $credentials_id;
     }
-    
+
     public function getId()
     {
         return $this->id;
@@ -92,11 +102,19 @@ class UserModel{
     {
         $this->credentials_id = $credentials_id;
     }
-    
-    public function __toString()
-    {
-        return "user";
 
+    public function getCredentials()
+    {
+        return $this->credentials;
     }
 
+    public function setCredentials($credentials)
+    {
+        $this->credentials = $credentials;
+    }
+
+    public function __toString()
+    {
+        return "User| ID: " . $this->id . "First Name: " . $this->first_name . " Last Name: " . $this->last_name . " Location: " . $this->location . " Summary: " . $this->summary . " Role: " . $this->role . " Credentials ID: " . $this->credentials_id ;
+    }
 }

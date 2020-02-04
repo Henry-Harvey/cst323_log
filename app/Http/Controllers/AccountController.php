@@ -75,13 +75,22 @@ class AccountController extends Controller
 
             Log::info("Exiting AccountController.onLogin() with " . $flag);
             if ($flag != null) {
-                
+
+                if(is_int($flag)){
+                    $data = [
+                        'errorMsg' => "Account suspended"
+                    ];
+                    return view('loginFailed')->with($data);
+                }
                 Session::put('user_id', $flag->getId());
                 Session::put('role', $flag->getRole());
-                
+
                 return view('home');
             } else {
-                return view('login');
+                $data = [
+                    'errorMsg' => "Account does not exist"
+                ];
+                return view('loginFailed')->with($data);
             }
         } catch (Exception $e) {
             Log::error("Exception ", array(
@@ -95,9 +104,119 @@ class AccountController extends Controller
     }
 
     public function onLogout()
-    {   
+    {
+        Log::info("Entering AccountController.onLogout()");
         Session::forget('user_id');
         Session::forget('role');
+        Log::info("Exiting AccountController.onLogout()");
         return view('login');
+    }
+
+    public function onGetAllUsers()
+    {
+        Log::info("Entering AccountController.onGetAllUsers()");
+        try {
+            $bs = new UserBusinessService();
+
+            $flag = $bs->getAllUsers();
+
+            Log::info("Exiting AccountController.onGetAllUsers()");
+            if ($flag != null) {
+                $data = [
+                    'allUsers' => $flag
+                ];
+                return view('admin')->with($data);
+            } else {
+                return view('home');
+            }
+        } catch (Exception $e) {
+            Log::error("Exception ", array(
+                "message" => $e->getMessage()
+            ));
+            $data = [
+                'errorMsg' => $e->getMessage()
+            ];
+            return view('exception')->with($data);
+        }
+    }
+    
+    public function onGetProfile()
+    {
+        Log::info("Entering AccountController.onGetProfile()");
+        try {
+            $bs = new UserBusinessService();
+            
+            $userid = Session::get('user_id');
+            
+            $user = new UserModel($userid, "", "", "", "", 0, 0);
+            
+            $flag = $bs->getUser($user);
+            
+            Log::info("Exiting AccountController.onGetProfile()");
+            if ($flag != null) {
+                $data = [
+                    'user' => $flag
+                ];
+                return view('profile')->with($data);
+            } else {
+                return view('home');
+            }
+        } catch (Exception $e) {
+            Log::error("Exception ", array(
+                "message" => $e->getMessage()
+            ));
+            $data = [
+                'errorMsg' => $e->getMessage()
+            ];
+            return view('exception')->with($data);
+        }
+    }
+
+    public function onTryDeleteUser(Request $request)
+    {
+        Log::info("Entering AccountController.onTryDeleteUser()");
+        $idToDelete = $request->input('idToDelete');
+        $userToDelete = new UserModel($idToDelete, "", "", "", "", 0, 0);
+
+        $bs = new UserBusinessService();
+
+        $flag = $bs->getUser($userToDelete);
+
+        $data = [
+            'userToDelete' => $flag
+        ];
+        Log::info("Exiting AccountController.onTryDeleteUser()");
+        return view('tryDelete')->with($data);
+    }
+
+    public function onDeleteUser(Request $request)
+    {
+        Log::info("Entering AccountController.onDeleteUser()");
+        $idToDelete = $request->input('idToDelete');
+        $userToDelete = new UserModel($idToDelete, "", "", "", "", 0, 0);
+        
+        $bs = new UserBusinessService();
+        
+        $user = $bs->getUser($userToDelete);
+        
+        $flag = $bs->remove($user);
+        Log::info("Exiting AccountController.onDeleteUser() with" . $flag);
+        return $this->onGetAllUsers();
+    }
+
+    public function onToggleSuspendUser(Request $request)
+    {
+        Log::info("Entering AccountController.onToggleSuspendUser()");
+        $idToToggle = $request->input('idToToggle');
+        $userToToggle = new UserModel($idToToggle, "", "", "", "", 0, 0);
+
+        $bs = new UserBusinessService();
+
+        $user = $bs->getUser($userToToggle);
+
+        $flag = $bs->toggleSuspendUser($user);
+
+        Log::info("Exiting AccountController.onToggleSuspendUser() with " . $flag);
+        return $this->onGetAllUsers();
     }
 }

@@ -41,12 +41,13 @@ Route::get('/home', function () {
 Route::get('/processLogout', 'AccountController@onLogout');
 
 
-// Route for navigating to the user profile page
-Route::get('/profile', function () {
-    return view('profile');
-});
+Route::get('/profile', 'AccountController@onGetProfile');
 
 // Route for navigating to the admin page
-Route::get('/admin', function () {
-    return view('admin');
-});
+Route::get('/admin', 'AccountController@onGetAllUsers');
+
+Route::post('/processTryDeleteUser', 'AccountController@onTryDeleteUser');
+
+Route::post('/processDeleteUser', 'AccountController@onDeleteUser');
+
+Route::post('/processToggleSuspendUser', 'AccountController@onToggleSuspendUser');

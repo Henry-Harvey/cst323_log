@@ -1,9 +1,8 @@
-@extends('layouts.appmaster') 
+@extends('layouts.appmasterLoggedOut') 
 @section('title', 'Account Registration')
 
 @section('content')
 
-@if(!Session::get('user_id'))
 <h2>Registration Form</h2>
 
 <form action="processRegister" method="POST">
@@ -49,10 +48,6 @@
 
 </form>
 
-<a href="login">Login</a>
-
-@else
-<h2>You must be logged out to register</h2>
-@endif
+Already have an account? Click <a href="login">here</a> to log in
 
 @endsection

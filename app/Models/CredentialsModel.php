@@ -1,20 +1,25 @@
 <?php
-
 namespace App\Models;
 
 // product class
-class CredentialsModel{
-    
+class CredentialsModel
+{
+
     private $id;
+
     private $username;
+
     private $password;
-     
-    function __construct($id, $username, $password){
+
+    private $suspended;
+
+    function __construct($id, $username, $password)
+    {
         $this->id = $id;
         $this->username = $username;
         $this->password = $password;
     }
-    
+
     public function getId()
     {
         return $this->id;
@@ -44,5 +49,14 @@ class CredentialsModel{
     {
         $this->password = $password;
     }
-    
+
+    public function getSuspended()
+    {
+        return $this->suspended;
+    }
+
+    public function setSuspended($suspended)
+    {
+        $this->suspended = $suspended;
+    }
 }
