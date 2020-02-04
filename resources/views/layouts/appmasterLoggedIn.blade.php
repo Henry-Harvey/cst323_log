@@ -28,7 +28,11 @@
 	@include('layouts._navbar')
 	@include('layouts._header')
 	<div align="center">
-		@yield('content')
+		@if(Session::get('user_id'))
+			@yield('content')
+		@else
+			<h2>You must be logged in to view this page</h2>
+		@endif
 	</div>
 	@include('layouts._footer')
 </body>

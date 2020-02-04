@@ -1,51 +1,23 @@
-@if(!Session::get('user_id'))
-<div class="navbar">
-	<div class="navbar-inner">
+<div class="navbar-clc">
+	<div class="inner-nav">
 
-		<a id="#">Logo Placeholder</a>
+		<img src="{{URL::asset('image/logo-placeholder.png')}}" alt="No Image Found">
 
-		<ul class="nav">
-			<li><a href="home">Home</a></li>
-
-			<li><a href="login">Login</a></li>
-			<li><a href="register">Register</a></li>
-
-
+		<ul class="navbar-menu-items">
+			<li class="item"><a href="home">Home</a></li>
+			@if(Session::get('user_id'))
+			<li class="item"><a href="profile">User Profile</a></li>
+			
+				@if(Session::get('role') != 0)
+				<li class="item"><a class="item" href="admin">Admin</a></li>
+				@endif
+				
+				<li class="item"><a href="processLogout">Logout</a></li>
+			@else
+			<li class="item"><a href="login">Login</a></li>
+			<li class="item"><a href="register">Register</a></li>
+			@endif
+			
 		</ul>
 	</div>
 </div>
-@else 
-	@if(Session::get('role') == 0)
-	<div class="navbar">
-		<div class="navbar-inner">
-
-			<a id="#">Logo Placeholder</a>
-
-			<ul class="nav">
-				<li><a href="home">Home</a></li>
-
-				<li><a href="profile">User Profile</a></li>
-				<li><a href="processLogout">Logout</a></li>
-
-			</ul>
-		</div>
-	</div>
-	@else
-		<div class="navbar">
-		<div class="navbar-inner">
-
-			<a id="#">Logo Placeholder</a>
-
-			<ul class="nav">
-				<li><a href="home">Home</a></li>
-
-				<li><a href="admin">Admin</a></li>
-				<li><a href="profile">User Profile</a></li>
-				<li><a href="processLogout">Logout</a></li>
-
-			</ul>
-		</div>
-	</div>
-	@endif 
-
-@endif
