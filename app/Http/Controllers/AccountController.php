@@ -13,11 +13,14 @@ class AccountController extends Controller
 {
 
     /**
-     * Controller method that takes in a request
-     * Sets the data from the request to variables
-     * Creates a Calculation object from the variables
-     * Creates an associative array with the object
-     * Returns result view and pushes the data array
+     * Takes in a request from register form
+     * Sets variables from the request inputs
+     * Creates Credentials and User objects from the variables
+     * Creates a user business service
+     * Calls the register bs method, using the Credentials and User objects
+     * Sets a flag equal to the result
+     * If one row was inserted, return the login view
+     * Else return the register view
      *
      * @param Request $request
      *            Implicit request
@@ -38,10 +41,11 @@ class AccountController extends Controller
             $c = new CredentialsModel(0, $username, $password);
 
             $u = new UserModel(0, $first_name, $last_name, $location, $summary, 0, 0);
+            $u->setCredentials($c);
 
             $bs = new UserBusinessService();
 
-            $flag = $bs->register($c, $u);
+            $flag = $bs->register($u);
 
             Log::info("Exiting AccountController.onRegister() with " . $flag);
             if ($flag == 1) {
@@ -59,7 +63,22 @@ class AccountController extends Controller
             return view('exception')->with($data);
         }
     }
-
+    
+    /**
+     * Takes in a request from login form
+     * Sets variables from the request inputs
+     * Creates Credentials object from the variables
+     * Creates a user business service
+     * Calls the login bs method, using the Credentials object
+     * Sets a flag equal to the result
+     * If the flag is not null and is an int, the user was suspended. Return the loginFailed view and send the error message
+     * If the flag is not null and is not an int, set the user id and role sessions. Return the home view
+     * If the flag is null, the credentials dont match the database. Return the loginFailed view and send the error message
+     *
+     * @param Request $request
+     *            Implicit request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onLogin(Request $request)
     {
         Log::info("Entering AccountController.onLogin()");
@@ -103,6 +122,12 @@ class AccountController extends Controller
         }
     }
 
+    /**
+     * Removes all sessions
+     * Return the login view
+     *
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onLogout()
     {
         Log::info("Entering AccountController.onLogout()");
@@ -112,6 +137,15 @@ class AccountController extends Controller
         return view('login');
     }
 
+    /**
+     * Creates a user business service
+     * Calls the getAllUsers bs method
+     * Sets a flag equal to the result
+     * If the flag is not null, return the admin view and persist the list of users
+     * If the flag is null, return the home view
+     *
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onGetAllUsers()
     {
         Log::info("Entering AccountController.onGetAllUsers()");
@@ -140,6 +174,16 @@ class AccountController extends Controller
         }
     }
     
+    /**
+     * Creates a user business service
+     * Gets the user id from the session
+     * Calls the getUser bs method, using the user id
+     * Sets a flag equal to the result
+     * If the flag is not null, return the profile view and persist the user
+     * If the flag is null, return the home view
+     *
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onGetProfile()
     {
         Log::info("Entering AccountController.onGetProfile()");
@@ -171,7 +215,115 @@ class AccountController extends Controller
             return view('exception')->with($data);
         }
     }
+    
+    public function onGetOtherProfile(Request $request)
+    {
+        Log::info("Entering AccountController.onGetOtherProfile()");
+        try {
+            $bs = new UserBusinessService();
+            
+            $userid = $request->input('idToShow');
+            
+            $user = new UserModel($userid, "", "", "", "", 0, 0);
+            
+            $flag = $bs->getUser($user);
+            
+            Log::info("Exiting AccountController.onGetProfile()");
+            if ($flag != null) {
+                $data = [
+                    'user' => $flag
+                ];
+                return view('profile')->with($data);
+            } else {
+                return view('home');
+            }
+        } catch (Exception $e) {
+            Log::error("Exception ", array(
+                "message" => $e->getMessage()
+            ));
+            $data = [
+                'errorMsg' => $e->getMessage()
+            ];
+            return view('exception')->with($data);
+        }
+    }
+    
+    public function onGetEditProfile()
+    {
+        Log::info("Entering AccountController.onGetEditProfile()");
+        try {
+            $bs = new UserBusinessService();
+            
+            $userid = Session::get('user_id');
+            
+            $user = new UserModel($userid, "", "", "", "", 0, 0);
+            
+            $flag = $bs->getUser($user);
+            
+            Log::info("Exiting AccountController.onGetEditProfile()");
+            if ($flag != null) {
+                $data = [
+                    'user' => $flag
+                ];
+                return view('editProfile')->with($data);
+            } else {
+                return view('home');
+            }
+        } catch (Exception $e) {
+            Log::error("Exception ", array(
+                "message" => $e->getMessage()
+            ));
+            $data = [
+                'errorMsg' => $e->getMessage()
+            ];
+            return view('exception')->with($data);
+        }
+    }
+    
+    public function onEdit(Request $request){
+        
+        try {
+            $id = $request->input('id');
+            $first_name = $request->input('firstname');
+            $last_name = $request->input('lastname');
+            $location = $request->input('location');
+            $summary = $request->input('summary');         
+            
+            $u = new UserModel($id, $first_name, $last_name, $location, $summary, 0, 0);
+            
+            $bs = new UserBusinessService();
+            
+            $flag = $bs->editUser($u);
+            
+            if ($flag > 0) {
+                return $this->onGetProfile();
+            } else {
+                return $this->onGetEditProfile();
+            }
+        } catch (Exception $e) {
+            Log::error("Exception ", array(
+                "message" => $e->getMessage()
+            ));
+            $data = [
+                'errorMsg' => $e->getMessage()
+            ];
+            return view('exception')->with($data);
+        }
+    }
 
+    /**
+     * Takes in a request from admin view
+     * Sets variable from the request input
+     * Creates User object from the variable
+     * Creates a user business service
+     * Calls the getUser bs method, using the User object
+     * Sets the result equal to user
+     * Returns the tryDelete view and persist the user
+     *
+     * @param Request $request
+     *            Implicit request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onTryDeleteUser(Request $request)
     {
         Log::info("Entering AccountController.onTryDeleteUser()");
@@ -180,15 +332,30 @@ class AccountController extends Controller
 
         $bs = new UserBusinessService();
 
-        $flag = $bs->getUser($userToDelete);
+        $user = $bs->getUser($userToDelete);
 
         $data = [
-            'userToDelete' => $flag
+            'userToDelete' => $user
         ];
         Log::info("Exiting AccountController.onTryDeleteUser()");
         return view('tryDelete')->with($data);
     }
 
+    /**
+     * Takes in a request from tryDelete view
+     * Sets variable from the request input
+     * Creates User object from the variable
+     * Creates a user business service
+     * Calls the getUser bs method, using the User object
+     * Sets the result equal to user
+     * Calls the remove bs method
+     * Sets a flag equal to the result
+     * Returns the admin view
+     *
+     * @param Request $request
+     *            Implicit request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onDeleteUser(Request $request)
     {
         Log::info("Entering AccountController.onDeleteUser()");
@@ -204,6 +371,21 @@ class AccountController extends Controller
         return $this->onGetAllUsers();
     }
 
+    /**
+     * Takes in a request from tryDelete view
+     * Sets variable from the request input
+     * Creates User object from the variable
+     * Creates a user business service
+     * Calls the getUser bs method, using the User object
+     * Sets the result equal to user
+     * Calls the toggleSuspendUser bs method
+     * Sets a flag equal to the result
+     * Returns the admin view
+     *
+     * @param Request $request
+     *            Implicit request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onToggleSuspendUser(Request $request)
     {
         Log::info("Entering AccountController.onToggleSuspendUser()");
@@ -219,4 +401,5 @@ class AccountController extends Controller
         Log::info("Exiting AccountController.onToggleSuspendUser() with " . $flag);
         return $this->onGetAllUsers();
     }
+    
 }

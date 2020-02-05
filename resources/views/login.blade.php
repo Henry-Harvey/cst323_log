@@ -1,3 +1,4 @@
+<!-- This view displays a form that may be filled out and submitted, resulting in a the user logging in and setting the session or failing login -->
 @extends('layouts.appmasterLoggedOut') 
 @section('title', 'Account Login')
 
@@ -5,8 +6,9 @@
 
 <h2>Login Form</h2>
 
+<!-- Form takes in login info and uses http post to persist it to the controller -->
 <form action="processLogin" method="POST">
-		<input type="hidden" name="_token" value="<?php echo csrf_token()?>" />
+		{{ csrf_field() }}
 
 		<div class="form-group">
 			<label for="username">Username</label> <input style="width: 30%" type="text"

@@ -1,5 +1,6 @@
 <?php
 namespace App\Models;
+//This model is for containing the information for people who use the site
 
 // product class
 class UserModel
@@ -19,6 +20,7 @@ class UserModel
 
     private $credentials_id;
 
+    // not in the constructor
     private $credentials;
 
 

@@ -1,3 +1,4 @@
+<!-- This view displays a table with all users. The admin can click "suspend" or "delete" to perform those actions -->
 @extends('layouts.appmasterAdmin') 
 @section('title', 'Admin')
 
@@ -20,6 +21,7 @@
 				<th>Role</th>
 				<th>Username</th>
 				<th>Password</th>
+				<th>View</th>
 				<th>Suspend</th>
 				<th>Delete</th>
 			</tr>
@@ -39,10 +41,21 @@
 				<td>{{$user->getCredentials()->getUsername()}}</td>
 				<td>{{$user->getCredentials()->getPassword()}}</td>
 				<td>
+					<form action="processShowOtherUser" method="POST">
+						{{ csrf_field() }}
+						 
+						<input type="hidden"
+							name="idToShow" value= "{{$user->getId()}}" />
+						<button type="submit" class="btn btn-dark">View</button>
+
+					</form>
+				</td>
+				<td>
 				@if (Session::get('user_id') != $user->getId())
 					<form action="processToggleSuspendUser" method="POST">
-						<input type="hidden" name="_token"
-							value="<?php echo csrf_token()?>" /> <input type="hidden"
+						{{ csrf_field() }}
+							
+							<input type="hidden"
 							name="idToToggle" value= "{{$user->getId()}}" />
 				@if ($user->getCredentials()->getSuspended() == 0)
 						<button type="submit" class="btn btn-dark">Suspend</button>
@@ -55,8 +68,8 @@
 				<td>
 				@if (Session::get('user_id') != $user->getId())
 					<form action="processTryDeleteUser" method="POST">
-						<input type="hidden" name="_token"
-							value="<?php echo csrf_token()?>" /> 
+						{{ csrf_field() }}
+						 
 						<input type="hidden"
 							name="idToDelete" value= "{{$user->getId()}}" />
 						<button type="submit" class="btn btn-dark">Delete</button>

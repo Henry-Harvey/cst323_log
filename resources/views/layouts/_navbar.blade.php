@@ -1,7 +1,6 @@
+<!-- This partial view is used to show the navbar for navigating to other pages -->
 <div class="navbar-clc">
 	<div class="inner-nav">
-
-		<img src="{{URL::asset('image/logo-placeholder.png')}}" alt="No Image Found">
 
 		<ul class="navbar-menu-items">
 			<li class="item"><a href="home">Home</a></li>
