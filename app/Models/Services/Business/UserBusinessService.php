@@ -9,14 +9,20 @@ class UserBusinessService
 {
 
     /**
-     * Takes in a user
-     * Uses the data service's register() method and returns its result
+     * Takes in a user model to be created
+     * Creates a new database model
+     * Gets the database from the model
+     * Creates a user data service with the database
+     * Calls the checkUsername() method from the ds
+     * If it returns 0, calls the create() method from the ds with the user model as the parameter
+     * Sets the database equal to null
+     * Returns the result of the create() method
      *
      * @param
      *            newUser user to be registered
-     * @return {@link Boolean} a boolean to show if successful
+     * @return {@link Integer} number of rows affected
      */
-    function register($newCredentials, $newUser)
+    function register($newUser)
     {
         Log::info("Entering UserBusinessService.register()");
 
@@ -25,8 +31,8 @@ class UserBusinessService
 
         $flag = 0;
         $ds = new UserDataService($db);
-        if ($ds->checkUsername($newCredentials) == 0) {
-            $flag = $ds->create2($newCredentials, $newUser);
+        if ($ds->checkUsername($newUser->getCredentials()) == 0) {
+            $flag = $ds->create($newUser);
         }
 
         $db = null;
@@ -36,12 +42,17 @@ class UserBusinessService
     }
 
     /**
-     * Takes in a user id
-     * Uses the data service's read() method and returns its result
+     * Takes in a user model to search for
+     * Creates a new database model
+     * Gets the database from the model
+     * Creates a user data service with the database
+     * Calls the read() method from the ds with the user model as the parameter
+     * Sets the database equal to null
+     * Returns the result of the read() method
      *
      * @param
-     *            id an id of the user to return
-     * @return {@link User}} the user that was found
+     *            searchUser user to be searched for
+     * @return {@link UserModel} user that was found
      */
     function getUser($searchUser)
     {
@@ -60,9 +71,14 @@ class UserBusinessService
     }
 
     /**
-     * Uses the data service's readAll() method and returns its result
+     * Creates a new database model
+     * Gets the database from the model
+     * Creates a user data service with the database
+     * Calls the readAll() method from the ds
+     * Sets the database equal to null
+     * Returns the result of the readAll() method
      *
-     * @return {@link List} the user list that was found
+     * @return {@link Array} array of users found
      */
     function getAllUsers()
     {
@@ -81,12 +97,17 @@ class UserBusinessService
     }
 
     /**
-     * Takes in a user
-     * Uses the data service's update() method and returns its result
+     * Takes in a user model to update
+     * Creates a new database model
+     * Gets the database from the model
+     * Creates a user data service with the database
+     * Calls the update() method from the ds with the user model as the parameter
+     * Sets the database equal to null
+     * Returns the result of the update() method
      *
      * @param
-     *            updatedUser a user to be updated
-     * @return {@link Boolean} a boolean to show if successful
+     *            updatedUser user to be updated
+     * @return {@link Integer} number of rows affected
      */
     function editUser($updatedUser)
     {
@@ -105,12 +126,17 @@ class UserBusinessService
     }
 
     /**
-     * Takes in a user id
-     * Uses the data service's delete() method and returns its result
+     * Takes in a user model to delete
+     * Creates a new database model
+     * Gets the database from the model
+     * Creates a user data service with the database
+     * Calls the delete() method from the ds with the user model as the parameter
+     * Sets the database equal to null
+     * Returns the result of the delete() method
      *
      * @param
-     *            id an id of the user to delete
-     * @return {@link Boolean} a boolean to show if successful
+     *            deleteUser user to be deleted
+     * @return {@link Integer} number of rows affected
      */
     function remove($deleteUser)
     {
@@ -129,35 +155,17 @@ class UserBusinessService
     }
 
     /**
-     * Uses the data service's findByFirstName() method and returns its result
+     * Takes in a credentials model
+     * Creates a new database model
+     * Gets the database from the model
+     * Creates a user data service with the database
+     * Calls the authenticate() method from the ds with the credentials model as the parameter
+     * Sets the database equal to null
+     * Returns the result of the authenticate() method
      *
      * @param
-     *            n the first name of the users to return
-     * @return {@link List} the user list that was found
-     */
-    function findByName($searchUser)
-    {
-        Log::info("Entering UserBusinessService.findByName()");
-
-        $Database = new DatabaseModel();
-        $db = $Database->getDb();
-
-        $ds = new UserDataService($db);
-        $flag = $ds->findByName($searchUser);
-
-        $db = null;
-
-        Log::info("Exiting UserBusinessService.findByName() with " . $flag);
-        return $flag;
-    }
-
-    /**
-     * Takes in username and password strings
-     * Uses the data service's login() method and returns its result
-     *
-     * @param
-     *            username, password credentials used for login
-     * @return {@link User} the user that was logged in
+     *            loginCredentials credentials to authenticate
+     * @return {@link UserModel} user that was authenticated
      */
     function login($loginCredentials)
     {
@@ -174,22 +182,64 @@ class UserBusinessService
         Log::info("Exiting UserBusinessService.login() with " . $flag);
         return $flag;
     }
-    
-    function toggleSuspendUser($toggleSuspendUser){
-        Log::info("Entering UserBusinessService.toggleSuspendUser()");
-        
+
+    /**
+     * Takes in a user model to search for
+     * Creates a new database model
+     * Gets the database from the model
+     * Creates a user data service with the database
+     * Calls the readByName() method from the ds with the user model as the parameter
+     * Sets the database equal to null
+     * Returns the result of the readByName() method
+     *
+     * @param
+     *            searchUser user to be searched for
+     * @return {@link Array} array of Users found
+     */
+    function findByName($searchUser)
+    {
+        Log::info("Entering UserBusinessService.findByName()");
+
         $Database = new DatabaseModel();
         $db = $Database->getDb();
-        
+
         $ds = new UserDataService($db);
-        $flag = $ds->toggleSuspend($toggleSuspendUser);
-        
+        $flag = $ds->readByName($searchUser);
+
         $db = null;
-        
-        Log::info("Exiting UserBusinessService.toggleSuspendUser() with " . $flag);
+
+        Log::info("Exiting UserBusinessService.findByName() with " . $flag);
         return $flag;
     }
 
+    /**
+     * Takes in a user model to toggle
+     * Creates a new database model
+     * Gets the database from the model
+     * Creates a user data service with the database
+     * Calls the toggleSuspend() method from the ds with the user model as the parameter
+     * Sets the database equal to null
+     * Returns the result of the toggleSuspend() method
+     *
+     * @param
+     *            searchUser user to be toggled
+     * @return {@link Array} number of rows affected
+     */
+    function toggleSuspendUser($toggleSuspendUser)
+    {
+        Log::info("Entering UserBusinessService.toggleSuspendUser()");
+
+        $Database = new DatabaseModel();
+        $db = $Database->getDb();
+
+        $ds = new UserDataService($db);
+        $flag = $ds->toggleSuspend($toggleSuspendUser);
+
+        $db = null;
+
+        Log::info("Exiting UserBusinessService.toggleSuspendUser() with " . $flag);
+        return $flag;
+    }
 }
 
 

@@ -1,15 +1,16 @@
 <?php
 namespace App\Models\Utility;
+//This model is for retrieving a new database. Used in business services
 
 use \PDO;
 
 class DatabaseModel{
      
     /**
-     * Creates a new database
+     * Creates a new pdo database
      * returns the database
      *
-     * @return {@link mysqli}		database that was created
+     * @return {@link PDO}		database that was created
      */
     function getDb(){
         $servername = config("database.connections.mysql.host");

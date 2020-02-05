@@ -1,3 +1,4 @@
+<!-- This view displays a table with a single user that may be deleted by pressing "yes". Pressing "no" brings the user back to the admin page -->
 @extends('layouts.appmasterAdmin') @section('title', 'Try Delete')
 
 @section('content')
@@ -28,6 +29,7 @@
 		<tbody>
 
 			<tr>
+			<!-- $userToDelete comes from AccountController.onTryDeleteUser() -->
 				<td>{{$userToDelete->getId()}}</td>
 				<td>{{$userToDelete->getFirst_name()}}</td>
 				<td>{{$userToDelete->getLast_name()}}</td>
@@ -43,7 +45,7 @@
 
 	</table>
 	<form action="processDeleteUser" method="POST">
-		<input type="hidden" name="_token" value="<?php echo csrf_token()?>" />
+		{{ csrf_field() }}
 		<input type="hidden" name="idToDelete" value="{{$userToDelete->getId()}}" />
 		<button type="submit" class="btn btn-dark">Yes</button>
 	</form>

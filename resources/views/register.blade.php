@@ -1,3 +1,4 @@
+<!-- This view displays a form that may be filled out and submitted, resulting in a new user being created with the filled in information -->
 @extends('layouts.appmasterLoggedOut') 
 @section('title', 'Account Registration')
 
@@ -5,41 +6,42 @@
 
 <h2>Registration Form</h2>
 
+<!-- Form takes in user info and uses http post to persist it to the controller -->
 <form action="processRegister" method="POST">
-	<input type="hidden" name="_token" value="<?php echo csrf_token()?>" />
+	{{ csrf_field() }}
 
 	<div class="form-group">
-		<label for="username">Username</label> <input type="text"
+		<label for="username">Username</label> <input type="text" style="width: 30%"
 			class="form-control" id="username" placeholder="Username"
 			name="username">
 	</div>
 
 	<div class="form-group">
-		<label for="password">Password</label> <input type="text"
+		<label for="password">Password</label> <input type="text" style="width: 30%"
 			class="form-control" id="password" placeholder="Password"
 			name="password">
 	</div>
 
-	<div class="form-group">
-		<label for="firstname">First Name</label> <input type="text"
+	<div class="form-group"> 
+		<label for="firstname">First Name</label> <input type="text" style="width: 30%"
 			class="form-control" id="firstname" placeholder="First Name"
 			name="firstname">
 	</div>
 
 	<div class="form-group">
-		<label for="lastname">Last Name</label> <input type="text"
+		<label for="lastname">Last Name</label> <input type="text" style="width: 30%"
 			class="form-control" id="lastname" placeholder="Last Name"
 			name="lastname">
 	</div>
 	
 	<div class="form-group">
-		<label for="location">Location</label> <input type="text"
+		<label for="location">Location</label> <input type="text" style="width: 30%"
 			class="form-control" id="location" placeholder="Location"
 			name="location">
 	</div>
 	
 	<div class="form-group">
-		<label for="summary">Summary</label> <input type="text"
+		<label for="summary">Summary</label> <input type="text" style="width: 30%"
 			class="form-control" id="summary" placeholder="Summary"
 			name="summary">
 	</div>

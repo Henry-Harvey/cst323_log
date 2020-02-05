@@ -3,58 +3,76 @@ namespace App\Models\Services\Data;
 
 interface DataServiceInterface
 {
+
     /**
      * Takes in an object
-     * Connects to the database
-     * Creates and executes a sql statement
+     * Sets variables for each parameter of the object
+     * Creates an INSERT sql statement from the database
+     * Binds the paramters of the sql statement equal to the variables
+     * Executes the sql statement
      * Returns a boolean indicating success or failure
      *
-     * @param newModel		object to be created
-     * @return 	{@link Boolean}		boolean for success
+     * @param
+     *            newModel object to be created
+     * @return {@link Integer} int of rows affected
      */
     function create($newModel);
-    
-    /**
-     * Takes in an int id
-     * Connects to the database
-     * Creates and executes a sql statement
-     * Sets an object equal to the result set
-     * Returns the object
-     *
-     * @param id	int to find the object
-     * @return 	{@link Object}		object that is found
-     */
-    function read($searchModel);
-    
-    /**
-     * Connects to the database
-     * Creates and executes a sql statement
-     * Sets a list of objects equal to the result set
-     * Returns the list
-     *
-     * @return 	{@link List}		list of all objects
-     */
-    function readAll();
-    
+
     /**
      * Takes in an object
-     * Connects to the database
-     * Creates and executes a sql statement
-     * Returns a boolean indicating success or failure
+     * Sets id of the object to a variable
+     * Creates a SELECT sql statement from the database
+     * Binds the id paramter of the sql statement
+     * Executes the sql statement
+     * If a row was found, set variables for all column data
+     * Create an object from the variables
+     * Returns the object
+     * Else return null
      *
-     * @param updatedModel		object to be updated
-     * @return 	{@link Boolean}		boolean for success
+     * @param
+     *            newModel object to search for
+     * @return {@link Object} object that is found
+     */
+    function read($searchModel);
+
+    /**
+     * Creates a SELECT sql statement from the database
+     * Executes the sql statement
+     * If rows were found, set variables for all column data
+     * Create an object from the variables
+     * Add the object to array
+     * Repeat for each row
+     * Returns the array
+     *
+     * @return {@link Array} array of objects found
+     */
+    function readAll();
+
+    /**
+     * Takes in an updated object
+     * Sets variables for each parameter of the object
+     * Creates an UPDATE sql statement from the database
+     * Binds the paramters of the sql statement equal to the variables
+     * Executes the sql statement
+     * Returns the number of rows affected
+     *
+     * @param
+     *            updatedModel object to update
+     * @return {@link Integer} number of rows affected
      */
     function update($updatedModel);
-    
+
     /**
-     * Takes in an object id
-     * Connects to the database
-     * Creates and executes a sql statement
-     * Returns a boolean indicating success or failure
+     * Takes in an object to delete
+     * Sets id of the object to a variable
+     * Creates a DELETE sql statement from the database
+     * Binds the id paramter of the sql statement
+     * Executes the sql statement
+     * Returns the number of rows affected
      *
-     * @param id		id of object to be deleted
-     * @return 	{@link Boolean}		boolean for success
+     * @param
+     *            deleteModel object to delete
+     * @return {@link Integer} number of rows affected
      */
     function delete($deleteModel);
 }

@@ -1,5 +1,6 @@
 <?php
 namespace App\Models\Utility;
+//This model is for creating a custom database exception
 
 use Exception;
 

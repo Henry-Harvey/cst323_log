@@ -1,3 +1,4 @@
+<!-- This partial view is for displaying the footer of the page -->
 <style>
     .footer
     {
@@ -9,5 +10,5 @@
 </style>
 
 <div class="footer">
-	<h5>Copyright ©2019 Henry Harvey and Jake Taylor LLC</h5>
+	<h5>Copyright &copy; {{date ('Y')}} Henry Harvey and Jake Taylor LLC</h5>
 </div>

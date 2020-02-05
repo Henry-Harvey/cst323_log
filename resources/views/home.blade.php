@@ -1,3 +1,4 @@
+<!-- This view displays a home page message that may be viewed whether the user is logged in or not -->
 @extends('layouts.appmaster') 
 @section('title', 'Home')
 

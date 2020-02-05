@@ -1,5 +1,6 @@
 <?php
 namespace App\Models;
+//This model is for containing the information for people to log in to the site
 
 // product class
 class CredentialsModel
@@ -11,6 +12,7 @@ class CredentialsModel
 
     private $password;
 
+    // not in the constructor
     private $suspended;
 
     function __construct($id, $username, $password)
