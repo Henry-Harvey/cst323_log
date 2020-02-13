@@ -9,8 +9,8 @@
 	@include('layouts._navbar')
 	@include('layouts._header')
 	<div align="center">
-		@if(Session::get('user_id'))
-			@if(Session::get('role') != 0)
+		@if(Session::get('sp'))
+			@if(Session::get('sp')->getRole() != 0)
 				@yield('content')
 			@else
 		<h2>You must be an admin to view this page</h2>

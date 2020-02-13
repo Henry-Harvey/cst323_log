@@ -14,7 +14,7 @@ interface DataServiceInterface
      *
      * @param
      *            newModel object to be created
-     * @return {@link Integer} int of rows affected
+     * @return {@link Integer} int of row(s) affected
      */
     function create($newModel);
 
@@ -54,11 +54,11 @@ interface DataServiceInterface
      * Creates an UPDATE sql statement from the database
      * Binds the paramters of the sql statement equal to the variables
      * Executes the sql statement
-     * Returns the number of rows affected
+     * Returns the number of row(s) affected
      *
      * @param
      *            updatedModel object to update
-     * @return {@link Integer} number of rows affected
+     * @return {@link Integer} number of row(s) affected
      */
     function update($updatedModel);
 
@@ -68,11 +68,11 @@ interface DataServiceInterface
      * Creates a DELETE sql statement from the database
      * Binds the id paramter of the sql statement
      * Executes the sql statement
-     * Returns the number of rows affected
+     * Returns the number of row(s) affected
      *
      * @param
      *            deleteModel object to delete
-     * @return {@link Integer} number of rows affected
+     * @return {@link Integer} number of row(s) affected
      */
     function delete($deleteModel);
 }

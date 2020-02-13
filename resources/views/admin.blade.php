@@ -51,12 +51,11 @@
 					</form>
 				</td>
 				<td>
-				@if (Session::get('user_id') != $user->getId())
-					<form action="processToggleSuspendUser" method="POST">
+				@if (Session::get('sp')->getUser_id() != $user->getId())
+					<form action="processTryToggleSuspension" method="POST">
 						{{ csrf_field() }}
 							
-							<input type="hidden"
-							name="idToToggle" value= "{{$user->getId()}}" />
+							<input type="hidden" name="idToToggle" value= "{{$user->getId()}}" />
 				@if ($user->getCredentials()->getSuspended() == 0)
 						<button type="submit" class="btn btn-dark">Suspend</button>
 				@else
@@ -66,12 +65,11 @@
 				@endif
 				</td>
 				<td>
-				@if (Session::get('user_id') != $user->getId())
+				@if (Session::get('sp')->getUser_id() != $user->getId())
 					<form action="processTryDeleteUser" method="POST">
 						{{ csrf_field() }}
 						 
-						<input type="hidden"
-							name="idToDelete" value= "{{$user->getId()}}" />
+						<input type="hidden" name="idToDelete" value= "{{$user->getId()}}" />
 						<button type="submit" class="btn btn-dark">Delete</button>
 
 					</form>

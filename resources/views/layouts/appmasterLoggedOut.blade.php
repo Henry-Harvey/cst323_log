@@ -9,7 +9,7 @@
 	@include('layouts._navbar')
 	@include('layouts._header')
 	<div align="center">
-		@if(!Session::get('user_id'))
+		@if(!Session::get('sp'))
 		@yield('content')
 		@else
 		<h2>You must be logged out to view this page</h2>

@@ -11,6 +11,19 @@
  * |
  */
 
+// Route for navigating to the home page
+Route::get('/home', function () {
+    return view('home');
+});
+
+// Route for naviagting to the register form
+Route::get('/register', function () {
+    return view('register');
+});
+
+// Route for calling the register controller method from the register form
+Route::post('/processRegister', 'AccountController@onRegister');
+
 // Route for navigating to the login form with an empty url
 Route::get('/', function () {
     return view('login');
@@ -24,44 +37,39 @@ Route::get('/login', function () {
 // Route for calling the login controller method from the login form
 Route::post('/processLogin', 'AccountController@onLogin');
 
-// Route for naviagting to the register form
-Route::get('/register', function () {
-    return view('register');
-});
-
-// Route for calling the register controller method from the register form
-Route::post('/processRegister', 'AccountController@onRegister');
-
-// Route for navigating to the home page
-Route::get('/home', function () {
-    return view('home');
-});
-
 // Route for calling the logout controller method from the navbar
 Route::get('/processLogout', 'AccountController@onLogout');
 
 // Route for calling the profile controller method from the navbar
 Route::get('/profile', 'AccountController@onGetProfile');
 
+// Route for calling the profile controller method from the navbar
+Route::get('/getEditProfile', 'AccountController@onGetEditProfile');
+
+// Route for calling the edit profile method from the controller
+Route::post('/processEditProfile', 'AccountController@onEdit');
+
 // Route for calling the admin controller method from the navbar
-Route::get('/admin', 'AccountController@onGetAllUsers');
+Route::get('/admin', 'AdminController@onGetAllUsers');
+
+// Route for calling the suspend controller method from the admin page
+Route::post('/processShowOtherUser', 'AdminController@onGetOtherProfile');
 
 // Route for calling the tryDelete controller method from the admin page
-Route::post('/processTryDeleteUser', 'AccountController@onTryDeleteUser');
+Route::post('/processTryDeleteUser', 'AdminController@onTryDeleteUser');
 
 // Route for calling the delete controller method from the admin page
-Route::post('/processDeleteUser', 'AccountController@onDeleteUser');
+Route::post('/processDeleteUser', 'AdminController@onDeleteUser');
 
 // Route for calling the suspend controller method from the admin page
-Route::post('/processToggleSuspendUser', 'AccountController@onToggleSuspendUser');
+Route::post('/processTryToggleSuspension', 'AdminController@onTryToggleSuspension');
 
-//Route for calling the edit profile method from the controller
-Route::post('/editProfile', 'AccountController@onEdit');
+Route::post('/processToggleSuspension', 'AdminController@onToggleSuspension');
 
-// Route for calling the profile controller method from the navbar
-Route::get('/editProfile', 'AccountController@onGetEditProfile');
+Route::get('/jobPostings', 'AdminController@onGetAllPosts');
 
-// Route for calling the suspend controller method from the admin page
-Route::post('/processShowOtherUser', 'AccountController@onGetOtherProfile');
+Route::get('/createPost', function () {
+    return view('newPost');
+});
 
-//Route::get('image/{filename}', 'HomeController@displayImage')->name('image.displayImage');
+Route::post('/processCreatePost', 'AdminController@onCreatePost');
