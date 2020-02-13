@@ -18,11 +18,14 @@
     <!-- Name -->
     <h4 class="card-title">{{$user->getFirst_name()}} {{$user->getLast_name()}} </h4>
     <hr>
+    
+    <p>Location</p>
 	<p><i>{{$user->getLocation()}}</i></p>
+	<p>Summary</p>
     <p><i>{{$user->getSummary()}}</i></p>
     
-    @if(Session::get('user_id') == $user->getId())
-    <a href="editProfile">Edit Profile</a>
+    @if(Session::get('sp')->getUser_id() == $user->getId())
+    <a href="getEditProfile">Edit Profile</a>
     @endif
   </div>
 

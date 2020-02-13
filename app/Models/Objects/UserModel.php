@@ -1,6 +1,7 @@
 <?php
-namespace App\Models;
-//This model is for containing the information for people who use the site
+namespace App\Models\Objects;
+
+// This model is for containing the information for people who use the site
 
 // product class
 class UserModel
@@ -22,7 +23,6 @@ class UserModel
 
     // not in the constructor
     private $credentials;
-
 
     function __construct($id, $first_name, $last_name, $location, $summary, $role, $credentials_id)
     {
@@ -117,6 +117,9 @@ class UserModel
 
     public function __toString()
     {
-        return "User| ID: " . $this->id . "First Name: " . $this->first_name . " Last Name: " . $this->last_name . " Location: " . $this->location . " Summary: " . $this->summary . " Role: " . $this->role . " Credentials ID: " . $this->credentials_id ;
+        if ($this->credentials != null) {
+            return "User| ID: " . $this->id . " First Name: " . $this->first_name . " Last Name: " . $this->last_name . " Location: " . $this->location . " Summary: " . $this->summary . " Role: " . $this->role . " Credentials ID: " . $this->credentials_id . " " . $this->credentials;
+        }
+        return "User| ID: " . $this->id . "First Name: " . $this->first_name . " Last Name: " . $this->last_name . " Location: " . $this->location . " Summary: " . $this->summary . " Role: " . $this->role . " Credentials ID: " . $this->credentials_id;
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace App\Models;
+namespace App\Models\Objects;
 //This model is for containing the information for people to log in to the site
 
 // product class
@@ -12,16 +12,16 @@ class CredentialsModel
 
     private $password;
 
-    // not in the constructor
     private $suspended;
-
-    function __construct($id, $username, $password)
+    
+    function __construct($id, $username, $password, $suspended)
     {
         $this->id = $id;
         $this->username = $username;
         $this->password = $password;
+        $this->suspended = $suspended;
     }
-
+    
     public function getId()
     {
         return $this->id;
@@ -35,6 +35,11 @@ class CredentialsModel
     public function getPassword()
     {
         return $this->password;
+    }
+
+    public function getSuspended()
+    {
+        return $this->suspended;
     }
 
     public function setId($id)
@@ -52,13 +57,14 @@ class CredentialsModel
         $this->password = $password;
     }
 
-    public function getSuspended()
-    {
-        return $this->suspended;
-    }
-
     public function setSuspended($suspended)
     {
         $this->suspended = $suspended;
     }
+    
+    public function __toString()
+    {
+        return "Credentials| ID: " . $this->id . " Username: " . $this->username . " Password: " . $this->password . " Suspended: " . $this->suspended;
+    }
+
 }

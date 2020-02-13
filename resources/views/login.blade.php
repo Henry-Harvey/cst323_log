@@ -10,21 +10,21 @@
 <form action="processLogin" method="POST">
 		{{ csrf_field() }}
 
-		<div class="form-group">
-			<label for="username">Username</label> <input style="width: 30%" type="text"
-				class="form-control" id="username" placeholder="Username"
-				name="username">
-		</div>
+	<div class="form-group">
+		<label for="username">Username</label> 
+		<input style="width: 30%" type="text" class="form-control" id="username" placeholder="Username" name="username">
+		{{$errors->first('username')}}
+	</div>
 
-		<div class="form-group">
-			<label for="password">Password</label> <input style="width: 30%" type="text"
-				class="form-control" id="password" placeholder="Password"
-				name="password">
-		</div>
+	<div class="form-group">
+		<label for="password">Password</label> 
+		<input style="width: 30%" type="password" class="form-control" id="password" placeholder="Password" name="password">
+		{{$errors->first('password')}}
+	</div>
 
-		<button type="submit" class="btn btn-dark">Submit</button>
+	<button type="submit" class="btn btn-dark">Submit</button>
 
-	</form>
+</form>
 	
 	Don't have an account? Click <a href="register">here</a> to register
 

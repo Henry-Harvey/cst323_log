@@ -1,13 +1,13 @@
 <?php
 namespace App\Models\Services\Data;
 
-use App\Models\Objects\UserModel;
 use App\Models\Utility\DatabaseException;
 use Illuminate\Support\Facades\Log;
 use PDO;
 use PDOException;
+use App\Models\Objects\PostModel;
 
-class UserDataService implements DataServiceInterface
+class PostDataService implements DataServiceInterface
 {
 
     private $db = NULL;
@@ -21,29 +21,33 @@ class UserDataService implements DataServiceInterface
      *
      * @see DataServiceInterface create
      */
-    function create($user)
+    function create($post)
     {
-        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
+        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $post);
         try {
-            $first_name = $user->getFirst_name();
-            $last_name = $user->getLast_name();
-            $location = $user->getLocation();
-            $summary = $user->getSummary();
-            $role = 0;
-            $credentials_id = $user->getCredentials_id();
-            $stmt = $this->db->prepare('INSERT INTO users
-                                            (FIRSTNAME, LASTNAME, LOCATION, SUMMARY, ROLE, CREDENTIALS_ID)
-                                            VALUES (:first_name, :last_name, :location, :summary, :role, :credentials_id)');
-            $stmt->bindParam(':first_name', $first_name);
-            $stmt->bindParam(':last_name', $last_name);
+
+            $title = $post->getTitle();
+            $company = $post->getCompany();
+            $location = $post->getLocation();
+            $description = $post->getDescription();
+
+            $stmt = $this->db->prepare('INSERT INTO posts
+                                        (TITLE, COMPANY, LOCATION, DESCRIPTION)
+                                        VALUES (:title, :company, :location, :description)');
+            $stmt->bindParam(':title', $title);
+            $stmt->bindParam(':company', $company);
             $stmt->bindParam(':location', $location);
-            $stmt->bindParam(':summary', $summary);
-            $stmt->bindParam(':role', $role);
-            $stmt->bindParam(':credentials_id', $credentials_id);
+            $stmt->bindParam(':description', $description);
             $stmt->execute();
 
-            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $stmt->rowCount() . " row(s) affected");
-            return $stmt->rowCount();
+            if ($stmt->rowCount() != 1) {
+                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with -1. " . $stmt->rowCount() . " row(s) affected");
+                return -1;
+            }
+
+            $insertId = $this->db->lastInsertId();
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with insertId:" . $insertId . " and " . $stmt->rowCount() . " row(s) affected");
+            return $insertId;
         } catch (PDOException $e) {
             Log::error("Exception ", array(
                 "message" => $e->getMessage()
@@ -57,13 +61,12 @@ class UserDataService implements DataServiceInterface
      *
      * @see DataServiceInterface read
      */
-    function read($user)
+    function read($post)
     {
-        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
+        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $post);
         try {
-            $id = $user->getId();
-
-            $stmt = $this->db->prepare('SELECT * FROM users
+            $id = $post->getId();
+            $stmt = $this->db->prepare('SELECT * FROM posts
                                         WHERE ID = :id
                                         LIMIT 1');
             $stmt->bindParam(':id', $id);
@@ -75,19 +78,15 @@ class UserDataService implements DataServiceInterface
             }
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            $id = $result["ID"];
-            $first_name = $result['FIRSTNAME'];
-            $last_name = $result['LASTNAME'];
+            $title = $result['TITLE'];
+            $company = $result['COMPANY'];
             $location = $result['LOCATION'];
-            $summary = $result['SUMMARY'];
-            $role = $result['ROLE'];
-            $credentials_id = $result['CREDENTIALS_ID'];
+            $description = $result['DESCRIPTION'];
 
-            $u = new UserModel($id, $first_name, $last_name, $location, $summary, $role, $credentials_id);
+            $post = new PostModel($id, $title, $company, $location, $description);
 
-            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $u . " and " . $stmt->rowCount() . " row(s) found");
-            return $u;
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $post . " and " . $stmt->rowCount() . " row(s) found");
+            return $post;
         } catch (PDOException $e) {
             Log::error("Exception ", array(
                 "message" => $e->getMessage()
@@ -105,7 +104,7 @@ class UserDataService implements DataServiceInterface
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
-            $stmt = $this->db->prepare('SELECT * FROM users');
+            $stmt = $this->db->prepare('SELECT * FROM posts');
             $stmt->execute();
 
             if ($stmt->rowCount() == 0) {
@@ -113,22 +112,20 @@ class UserDataService implements DataServiceInterface
                 return $stmt->rowCount();
             }
 
-            $user_array = array();
+            $post_array = array();
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $id = $result["ID"];
-                $first_name = $result['FIRSTNAME'];
-                $last_name = $result['LASTNAME'];
+                $id = $result['ID'];
+                $title = $result['TITLE'];
+                $company = $result['COMPANY'];
                 $location = $result['LOCATION'];
-                $summary = $result['SUMMARY'];
-                $role = $result['ROLE'];
-                $credentials_id = $result['CREDENTIALS_ID'];
+                $description = $result['DESCRIPTION'];
 
-                $user = new UserModel($id, $first_name, $last_name, $location, $summary, $role, $credentials_id);
+                $post = new PostModel($id, $title, $company, $location, $description);
 
-                array_push($user_array, $user);
+                array_push($post_array, $post);
             }
-            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with UserModel array and " . $stmt->rowCount() . " row(s) found");
-            return $user_array;
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with PostModel array and " . $stmt->rowCount() . " row(s) found");
+            return $post_array;
         } catch (PDOException $e) {
             Log::error("Exception ", array(
                 "message" => $e->getMessage()
@@ -142,26 +139,26 @@ class UserDataService implements DataServiceInterface
      *
      * @see DataServiceInterface update
      */
-    function update($user)
+    function update($post)
     {
-        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
+        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $post);
         try {
-            $firstname = $user->getFirst_name();
-            $lastname = $user->getLast_name();
-            $location = $user->getLocation();
-            $summary = $user->getSummary();
-            $id = $user->getId();
+            $title = $post->getTitle();
+            $company = $post->getCompany();
+            $location = $post->getLocation();
+            $description = $post->getDescription();
+            $id = $post->getId();
 
-            $stmt = $this->db->prepare('UPDATE users
-                                        SET FIRSTNAME = :first_name, 
-                                            LASTNAME = :last_name, 
-                                            LOCATION = :location, 
-                                            SUMMARY = :summary
+            $stmt = $this->db->prepare('UPDATE posts
+                                        SET TITLE = :title,
+                                            COMPANY = :company,
+                                            LOCATION = :location
+                                            DESCRIPTION = :description
                                         WHERE ID = :id');
-            $stmt->bindParam(':first_name', $firstname);
-            $stmt->bindParam(':last_name', $lastname);
+            $stmt->bindParam(':title', $title);
+            $stmt->bindParam(':company', $company);
             $stmt->bindParam(':location', $location);
-            $stmt->bindParam(':summary', $summary);
+            $stmt->bindParam(':description', $description);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
 
@@ -180,13 +177,13 @@ class UserDataService implements DataServiceInterface
      *
      * @see DataServiceInterface delete
      */
-    function delete($user)
+    function delete($post)
     {
-        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
+        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $post);
         try {
-            $id = $user->getId();
+            $id = $post->getId();
 
-            $stmt = $this->db->prepare('DELETE FROM users
+            $stmt = $this->db->prepare('DELETE FROM posts
                                         WHERE ID = :id');
             $stmt->bindParam(':id', $id);
             $stmt->execute();
@@ -201,5 +198,4 @@ class UserDataService implements DataServiceInterface
             throw new DatabaseException("Database Exception: " . $e->getMessage(), 0, $e);
         }
     }
-
 }
