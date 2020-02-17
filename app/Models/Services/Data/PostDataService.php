@@ -152,7 +152,7 @@ class PostDataService implements DataServiceInterface
             $stmt = $this->db->prepare('UPDATE posts
                                         SET TITLE = :title,
                                             COMPANY = :company,
-                                            LOCATION = :location
+                                            LOCATION = :location,
                                             DESCRIPTION = :description
                                         WHERE ID = :id');
             $stmt->bindParam(':title', $title);

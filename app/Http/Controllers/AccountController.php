@@ -240,7 +240,7 @@ class AccountController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
      */
-    public function onEdit(Request $request)
+    public function onEditUser(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {

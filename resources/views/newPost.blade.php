@@ -38,7 +38,7 @@
 
 	@for ($i = 1; $i < 5; $i++)
 	<div class="form-group">
-		<label for="company">Skill {{$i}}*</label> 
+		<label for="skill{{$i}}">Skill {{$i}}*</label> 
 		<input style="width: 30%" type="text" class="form-control" id="skill{{$i}}" placeholder="Skill {{$i}}" name="skill{{$i}}">
 	</div>
 		@if($i == 1)

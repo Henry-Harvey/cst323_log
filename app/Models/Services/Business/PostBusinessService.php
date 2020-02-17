@@ -208,6 +208,7 @@ class PostBusinessService
         $ds = new PostDataService($db);
 
         $flag = $ds->update($updatedPost);
+        // update skills
 
         $db = null;
 

@@ -51,5 +51,18 @@ class ValidationRules
         ];
         return $rules;
     }
+    
+    public function getPostEditRules()
+    {
+        $rules = [
+            'id' => 'Required',
+            'title' => 'Required | Between:1,15',
+            'company' => 'Required | Between:1,15',
+            'location' => 'Required | Between:1,15',
+            'description' => 'Required | Between:1,15',
+            'skill1' => 'Required | Between:1,15',
+        ];
+        return $rules;
+    }
 }
 
