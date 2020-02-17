@@ -47,7 +47,7 @@ Route::get('/profile', 'AccountController@onGetProfile');
 Route::get('/getEditProfile', 'AccountController@onGetEditProfile');
 
 // Route for calling the edit profile method from the controller
-Route::post('/processEditProfile', 'AccountController@onEdit');
+Route::post('/processEditProfile', 'AccountController@onEditUser');
 
 // Route for calling the admin controller method from the navbar
 Route::get('/admin', 'AdminController@onGetAllUsers');
@@ -73,3 +73,11 @@ Route::get('/createPost', function () {
 });
 
 Route::post('/processCreatePost', 'AdminController@onCreatePost');
+
+Route::post('/processTryDeletePost', 'AdminController@onTryDeletePost');
+
+Route::post('/processDeletePost', 'AdminController@onDeletePost');
+
+Route::post('/getEditPost', 'AdminController@onGetEditPost');
+
+Route::post('/processEditPost', 'AdminController@onEditPost');

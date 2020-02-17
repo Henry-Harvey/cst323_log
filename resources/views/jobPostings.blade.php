@@ -21,6 +21,10 @@
 				<th>Company</th>
 				<th>Location</th>
 				<th>Description</th>
+				@if(Session::get('sp')->getRole() != 0)
+				<th>Edit</th>
+				<th>Delete</th>
+				@endif
 				
 			</tr>
 
@@ -34,6 +38,26 @@
 				<td>{{$post->getCompany()}}</td>
 				<td>{{$post->getLocation()}}</td>
 				<td>{{$post->getDescription()}}</td>
+				@if(Session::get('sp')->getRole() != 0)
+				<td>
+					<form action="getEditPost" method="POST">
+						{{ csrf_field() }}
+						 
+						<input type="hidden" name="idToEdit" value= "{{$post->getId()}}" />
+						<button type="submit" class="btn btn-dark">Edit</button>
+
+					</form>
+				</td>			
+				<td>
+					<form action="processTryDeletePost" method="POST">
+						{{ csrf_field() }}
+						 
+						<input type="hidden" name="idToDelete" value= "{{$post->getId()}}" />
+						<button type="submit" class="btn btn-dark">Delete</button>
+
+					</form>
+				</td>
+				@endif
 			</tr>
 				
 			<tr>
