@@ -64,5 +64,15 @@ class ValidationRules
         ];
         return $rules;
     }
+    
+    public function getHistoryRules()
+    {
+        $rules = [
+            'title' => 'Required | Between:1,15',
+            'company' => 'Required | Between:1,15',
+            'years' => 'Required | Between:1,15'
+        ];
+        return $rules;
+    }
 }
 

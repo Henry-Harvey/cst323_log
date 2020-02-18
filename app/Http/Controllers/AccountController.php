@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Exception;
+use App\Models\Services\Business\UserJobBusinessService;
 
 class AccountController extends Controller
 {
@@ -169,16 +170,21 @@ class AccountController extends Controller
         try {
             $user = $this->getUserFromSession();
 
-            if ($user != null) {
-                $data = [
-                    'user' => $user
-                ];
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to profile view");
-                return view('profile')->with($data);
-            } else {
+            if ($user == null) {
                 Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to home view");
                 return view('home');
             }
+            
+            $bs = new UserJobBusinessService();
+            
+            $userJob_array = $bs->getAllJobsForUser($user);
+            
+            $data = [
+                'user' => $user,
+                'userJob_array' => $userJob_array
+            ];
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to profile view");
+            return view('profile')->with($data);
         } catch (Exception $e) {
             Log::error("Exception ", array(
                 "message" => $e->getMessage()
