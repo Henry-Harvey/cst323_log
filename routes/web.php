@@ -81,3 +81,25 @@ Route::post('/processDeletePost', 'AdminController@onDeletePost');
 Route::post('/getEditPost', 'AdminController@onGetEditPost');
 
 Route::post('/processEditPost', 'AdminController@onEditPost');
+
+
+
+// Route for calling the history controller method from the navbar
+Route::get('/createUserJob', function () {
+    return view('newUserJob');
+});
+
+// Route for calling the edit job history method from the controller
+Route::post('/processCreateUserJob', 'UserJobController@onCreateUserJob');
+
+// Route for calling the skills controller method from the navbar
+Route::get('/getEditSkills', 'SkillsController@onGetEditSkills');
+
+// Route for calling the edit skills method from the controller
+Route::post('/processEditSkills', 'HistoryController@onEditSkills');
+
+// Route for calling the education controller method from the navbar
+Route::get('/getEditEducation', 'EducationController@onGetEditEducation');
+
+// Route for calling the edit education method from the controller
+Route::post('/processEditEducation', 'EducationController@onEditEducation');

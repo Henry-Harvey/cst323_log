@@ -29,7 +29,19 @@
     @endif
   </div>
 
+	<div class="user-resume">
+    	<h3>Job History</h3>
 
+		<a href="createUserJob">Add Job History</a>
+
+
+    	<h3>Skills</h3>
+
+		<a href="getEditSkills">Add Skills</a>
+    	<h3>Education</h3>
+
+		<a href="getEditEducation">Add Education</a>
+	</div>
 
 
 </div>
