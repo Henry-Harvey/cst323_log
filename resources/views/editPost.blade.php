@@ -31,7 +31,7 @@
 	</div>
 	
 	<div class="form-group">
-		<label for="summary">Description</label> 
+		<label for="description">Description</label> 
 		<input style="width: 30%" type="text" class="form-control" id="description" placeholder="Description" value="{{$postToEdit->getDescription()}}" name="description">
 		{{$errors->first('description')}}
 	</div>
@@ -48,12 +48,12 @@
 		
 		@if(isset($skill))		
 			<div class="form-group">
-			<label for="skill{{$i}}">Skill {{$i}}*</label> 
+			<label for="skill{{$i}}">Skill {{$i}}</label> 
 			<input style="width: 30%" type="text" class="form-control" id="skill{{$i}}" placeholder="Skill {{$i}}" value="{{$skill}}" name="skill{{$i}}">
 			</div>
 		@else
 			<div class="form-group">
-			<label for="skill{{$i}}">Skill {{$i}}*</label> 
+			<label for="skill{{$i}}">Skill {{$i}}</label> 
 			<input style="width: 30%" type="text" class="form-control" id="skill{{$i}}" placeholder="Skill {{$i}}" value="" name="skill{{$i}}">
 			</div>
 		@endif
@@ -64,7 +64,7 @@
 		
 	@endfor
 	
-	*Only 1 Skill is required to enter <br>
+	*Skill 2, 3, and 4 not required <br>
 	
 	<button type="submit" class="btn btn-dark">Save</button>
 

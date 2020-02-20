@@ -23,7 +23,7 @@ class PostBusinessService
      *            newUser user to be registered
      * @return {@link Integer} number of row(s) affected
      */
-    function create($newPost)
+    function createPost($newPost)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $newPost);
 
@@ -35,6 +35,7 @@ class PostBusinessService
         $postDS = new PostDataService($db);
         $postSkillDS = new PostSkillDataService($db);
 
+        // flag is either -1 (rows affected != 1), or insertID
         $flag = $postDS->create($newPost);
 
         if ($flag == - 1) {
@@ -49,8 +50,9 @@ class PostBusinessService
 
         foreach ($newPost->getPostSkill_array() as $postSkills) {
             $postSkills->setPost_id($insertId);
+            // flag is rows affected
             $flag2 = $postSkillDS->create($postSkills);
-            if ($flag2 == 0) {
+            if ($flag2 != 1) {
                 Log::info(substr(strrchr(__METHOD__, "\\"), 1) . " Rollback");
                 $db->rollBack();
                 $db = null;
@@ -60,12 +62,11 @@ class PostBusinessService
         }
 
         $db->commit();
-        $flag3 = 1;
 
         $db = null;
 
-        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag3);
-        return $flag3;
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with 1");
+        return 1;
     }
 
     /**
@@ -204,16 +205,42 @@ class PostBusinessService
 
         $Database = new DatabaseModel();
         $db = $Database->getDb();
+        
+        $db->beginTransaction();
 
-        $ds = new PostDataService($db);
+        $postDS = new PostDataService($db);
+        $postSkillDS = new PostSkillDataService($db);
 
-        $flag = $ds->update($updatedPost);
-        // update skills
+        // flag is rows affected
+        $flag = $postDS->update($updatedPost);
+        
+        // reset skills
+        // flag is rows affected
+        $flag2 = $postSkillDS->deleteAllFor($updatedPost);
+        
+        foreach ($updatedPost->getPostSkill_array() as $postSkills) {
+            // flag is rows affected
+            $flag3 = $postSkillDS->create($postSkills);
+            if ($flag3 != 1) {
+                Log::info(substr(strrchr(__METHOD__, "\\"), 1) . " Rollback");
+                $db->rollBack();
+                $db = null;
+                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag2);
+                return $flag3;
+            }
+        }
+        
+        if($flag == 0 && $flag2 == 0){
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with 0");
+            return 0;
+        }
 
+        $db->commit();
+        
         $db = null;
 
-        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
-        return $flag;
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with 1");
+        return 1;
     }
 
     /**
@@ -241,8 +268,8 @@ class PostBusinessService
         $postDS = new PostDataService($db);
         $postSkillDS = new PostSkillDataService($db);
 
-        // assume partial post has id and postSkill_array
         foreach ($partialPost->getPostSkill_array() as $postSkill) {
+            // flag is rows affected
             $flag = $postSkillDS->delete($postSkill);
             if ($flag != 1) {
                 Log::info(substr(strrchr(__METHOD__, "\\"), 1) . " Rollback");
@@ -253,6 +280,7 @@ class PostBusinessService
             }
         }
 
+        // flag is rows affected
         $flag2 = $postDS->delete($partialPost);
 
         if ($flag2 != 1) {

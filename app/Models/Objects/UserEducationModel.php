@@ -13,6 +13,15 @@ class UserEducationModel
     private $years;
     
     private $user_id;
+    
+    function __construct($id, $school, $degree, $years, $user_id)
+    {
+        $this->id = $id;
+        $this->school = $school;
+        $this->degree = $degree;
+        $this->years = $years;
+        $this->user_id = $user_id;
+    }
         
     public function getId()
     {

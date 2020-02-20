@@ -8,11 +8,11 @@
 </div>
 
 @if(Session::get('sp')->getRole() != 0)
-<a href="createPost">Add</a>
+<a href="newPost">Add</a>
 @endif
 
 <div>
-	<table id="users" class="display">
+	<table class="display">
 
 		<thead>
 
@@ -68,7 +68,6 @@
 				@endforeach
 				</td>
 			</tr>
-			
 			@endforeach
 
 		</tbody>

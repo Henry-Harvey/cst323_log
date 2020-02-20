@@ -7,7 +7,6 @@
 
 <body>
 	@include('layouts._navbar')
-	@include('layouts._header')
 	<div align="center">
 		@if(Session::get('sp'))
 			@yield('content')

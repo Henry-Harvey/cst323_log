@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use App\Models\Services\Business\UserJobBusinessService;
+use App\Models\Services\Business\UserSkillBusinessService;
+use App\Models\Services\Business\UserEducationBusinessService;
 
 class AccountController extends Controller
 {
@@ -175,13 +177,20 @@ class AccountController extends Controller
                 return view('home');
             }
             
-            $bs = new UserJobBusinessService();
+            $jobBS = new UserJobBusinessService();            
+            $userJob_array = $jobBS->getAllJobsForUser($user);
             
-            $userJob_array = $bs->getAllJobsForUser($user);
+            $skillBS = new UserSkillBusinessService();
+            $userSkill_array = $skillBS->getAllSkillsForUser($user);
+            
+            $educationBS = new UserEducationBusinessService();
+            $userEducation_array = $educationBS->getAllEducationForUser($user);
             
             $data = [
                 'user' => $user,
-                'userJob_array' => $userJob_array
+                'userJob_array' => $userJob_array,
+                'userSkill_array' => $userSkill_array,
+                'userEducation_array' => $userEducation_array
             ];
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to profile view");
             return view('profile')->with($data);
@@ -246,7 +255,7 @@ class AccountController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
      */
-    public function onEditUser(Request $request)
+    public function onEditProfile(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
