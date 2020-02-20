@@ -30,7 +30,7 @@
 
 		<tbody>
 
-			@foreach ($allUsers as $user)
+			@foreach ($allUsers_array as $user)
 			<tr>
 				<td>{{$user->getId()}}</td>
 				<td>{{$user->getFirst_name()}}</td>
@@ -41,7 +41,7 @@
 				<td>{{$user->getCredentials()->getUsername()}}</td>
 				<td>{{$user->getCredentials()->getPassword()}}</td>
 				<td>
-					<form action="processShowOtherUser" method="POST">
+					<form action="getOtherProfile" method="POST">
 						{{ csrf_field() }}
 						 
 						<input type="hidden"
@@ -52,7 +52,7 @@
 				</td>
 				<td>
 				@if (Session::get('sp')->getUser_id() != $user->getId())
-					<form action="processTryToggleSuspension" method="POST">
+					<form action="getTryToggleSuspension" method="POST">
 						{{ csrf_field() }}
 							
 							<input type="hidden" name="idToToggle" value= "{{$user->getId()}}" />
@@ -66,7 +66,7 @@
 				</td>
 				<td>
 				@if (Session::get('sp')->getUser_id() != $user->getId())
-					<form action="processTryDeleteUser" method="POST">
+					<form action="getTryDeleteUser" method="POST">
 						{{ csrf_field() }}
 						 
 						<input type="hidden" name="idToDelete" value= "{{$user->getId()}}" />

@@ -1,38 +1,37 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Objects\UserJobModel;
+use App\Models\Objects\UserSkillModel;
+use App\Models\Services\Business\UserSkillBusinessService;
 use App\Models\Utility\ValidationRules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Exception;
-use App\Models\Services\Business\UserJobBusinessService;
 
 
 
 
-class UserJobController extends Controller {
+class UserSkillController extends Controller {
     
     
-    public function onCreateUserJob(Request $request)
+    
+    public function onCreateUserSkill(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
             $vr = new ValidationRules();
             
-            $this->validate($request, $vr->getJobHistoryRules());
+            $this->validate($request, $vr->getSkillRules());
             
-            $title = $request->input('title');
-            $company = $request->input('company');
-            $years = $request->input('years');
+            $skill = $request->input('skill');
             
-            $job = new UserJobModel(0, $title, $company, $years, Session::get('sp')->getUser_id());              
+            $userSkill = new UserSkillModel(0, $skill, Session::get('sp')->getUser_id());
             
-            $bs = new UserJobBusinessService();
+            $bs = new UserSkillBusinessService();
             
-            $flag = $bs->create($job);
+            $flag = $bs->create($userSkill);
             
             if ($flag == 1) {
                 Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
@@ -40,7 +39,7 @@ class UserJobController extends Controller {
                 return $c->onGetProfile();
             } else {
                 Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to newJobHistory view");
-                return view('newJobHistory');
+                return view('newUserSkill');
             }
         } catch (ValidationException $e2) {
             throw $e2;
@@ -54,6 +53,11 @@ class UserJobController extends Controller {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to exception view");
             return view('exception')->with($data);
         }
-    }   
+    }
+    
+    
+    
+    
+    
     
 }

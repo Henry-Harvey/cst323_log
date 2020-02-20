@@ -52,25 +52,30 @@ class ValidationRules
         return $rules;
     }
     
-    public function getPostEditRules()
+    public function getJobHistoryRules()
     {
         $rules = [
-            'id' => 'Required',
-            'title' => 'Required | Between:1,15',
-            'company' => 'Required | Between:1,15',
-            'location' => 'Required | Between:1,15',
-            'description' => 'Required | Between:1,15',
-            'skill1' => 'Required | Between:1,15',
+            'title' => 'Required | Between:1,50',
+            'company' => 'Required | Between:1,50',
+            'years' => 'Required | Between:1,50'
         ];
         return $rules;
     }
     
-    public function getHistoryRules()
+    public function getEducationRules()
     {
         $rules = [
-            'title' => 'Required | Between:1,15',
-            'company' => 'Required | Between:1,15',
-            'years' => 'Required | Between:1,15'
+            'school' => 'Required | Between:1,50',
+            'degree' => 'Required | Between:1,50',
+            'years' => 'Required | Between:1,50'
+        ];
+        return $rules;
+    }
+    
+    public function getSkillRules()
+    {
+        $rules = [
+            'skill' => 'Required | Between:1,50'
         ];
         return $rules;
     }
