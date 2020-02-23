@@ -8,8 +8,8 @@ use App\Models\Utility\DatabaseModel;
 
 class UserEducationBusinessService
 {
-     // use this one
-    function create($newUserEducation)
+
+    function createEducation($newUserEducation)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $newUserEducation);
 
@@ -18,8 +18,26 @@ class UserEducationBusinessService
 
         $ds = new UserEducationDataService($db);
 
+        // flag is rows affected
         $flag = $ds->create($newUserEducation);
 
+        $db = null;
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
+        return $flag;
+    }
+    
+    function getEducation($partialEducation)
+    {
+        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $partialEducation);
+        
+        $Database = new DatabaseModel();
+        $db = $Database->getDb();
+        
+        $ds = new UserEducationDataService($db);
+        
+        // flag is UserEducation model or rows found
+        $flag = $ds->read($partialEducation);
+        
         $db = null;
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
         return $flag;
@@ -34,18 +52,47 @@ class UserEducationBusinessService
        
         $ds = new UserEducationDataService($db);
         
-        $flag = $ds->readAllFor($user);
+        // flag is array of UserEducation models
+        $flag = $ds->readAllFor($user);       
         
-        if (is_int($flag)) {
-            $db = null;
-            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
-            return $flag;
-        }
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . implode($flag));
+        return $flag;
+    }
+    
+    function editEducation($updatedEducation)
+    {
+        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $updatedEducation);
         
-        $userEducation_array = $flag;
+        $Database = new DatabaseModel();
+        $db = $Database->getDb();
+
+        $ds = new UserEducationDataService($db);
         
-        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . implode($userEducation_array));
-        return $userEducation_array;
+        // flag is rows affected
+        $flag = $ds->update($updatedEducation);           
+        
+        $db = null;
+        
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
+        return $flag;
+    }
+    
+    function remove($partialEducation)
+    {
+        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $partialEducation);
+        
+        $Database = new DatabaseModel();
+        $db = $Database->getDb();
+        
+        $ds = new UserEducationDataService($db);
+        
+        // flag is rows affected
+        $flag = $ds->delete($partialEducation);
+        
+        $db = null;
+        
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
+        return $flag;
     }
 }
 

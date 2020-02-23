@@ -1,4 +1,4 @@
-<!-- This view shows the error message from a failed controller method -->
+<!-- Displays the error message from an exception in a controller method -->
 @extends('layouts.appmaster')
 @section('title', 'Error')
 

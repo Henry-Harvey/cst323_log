@@ -108,11 +108,6 @@ class UserDataService implements DataServiceInterface
             $stmt = $this->db->prepare('SELECT * FROM users');
             $stmt->execute();
 
-            if ($stmt->rowCount() == 0) {
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $stmt->rowCount() . " row(s) found");
-                return $stmt->rowCount();
-            }
-
             $user_array = array();
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $id = $result["ID"];

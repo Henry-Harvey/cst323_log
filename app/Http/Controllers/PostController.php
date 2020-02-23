@@ -88,7 +88,7 @@ class PostController extends Controller
         try {
             $bs = new PostBusinessService();
             
-            // flag = array
+            // flag is array
             $flag = $bs->getAllPosts();
 
             if (empty($flag)) {
@@ -253,7 +253,20 @@ class PostController extends Controller
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         $partialPost = new PostModel($postid, "", "", "", "");
         $bs = new PostBusinessService();
-        $post = $bs->getPost($partialPost);
+        
+        // flag is either PostModel or rows found
+        $flag = $bs->getPost($partialPost);
+        
+        if (is_int($flag)) {
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
+            $data = [
+                'process' => "Get Post",
+                'back' => "home"
+            ];
+            return view('error')->with($data);
+        }
+        
+        $post = $flag;
 
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $post);
         return $post;

@@ -1,4 +1,4 @@
-<!-- This view displays a form that may be filled out and submitted, resulting in a the user logging in and setting the session or failing login -->
+<!-- Displays a form for creating a new job posting -->
 @extends('layouts.appmasterAdmin') 
 @section('title', 'New Job Posting')
 

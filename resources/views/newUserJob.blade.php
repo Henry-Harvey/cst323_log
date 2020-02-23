@@ -1,4 +1,4 @@
-
+<!-- Displays a form for a creating new user job -->
 @extends('layouts.appmasterLoggedIn')
 
 @section('content')

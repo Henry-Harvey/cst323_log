@@ -7,8 +7,8 @@ use App\Models\Services\Data\UserJobDataService;
 
 class UserJobBusinessService
 {
-    // use this one
-    function create($newUserJob)
+
+    function createJob($newUserJob)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $newUserJob);
 
@@ -17,8 +17,26 @@ class UserJobBusinessService
 
         $ds = new UserJobDataService($db);
 
+        // flag is rows affected
         $flag = $ds->create($newUserJob);
 
+        $db = null;
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
+        return $flag;
+    }
+    
+    function getJob($partialJob)
+    {
+        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $partialJob);
+        
+        $Database = new DatabaseModel();
+        $db = $Database->getDb();
+        
+        $ds = new UserJobDataService($db);
+        
+        // flag is UserJob model or rows found
+        $flag = $ds->read($partialJob);
+        
         $db = null;
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
         return $flag;
@@ -33,17 +51,46 @@ class UserJobBusinessService
        
         $ds = new UserJobDataService($db);
         
-        $flag = $ds->readAllFor($user);
+        // flag is array of UserJob models
+        $flag = $ds->readAllFor($user);            
         
-        if (is_int($flag)) {
-            $db = null;
-            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
-            return $flag;
-        }
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . implode($flag));
+        return $flag;
+    }
+    
+    function editJob($updatedJob)
+    {
+        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $updatedJob);
         
-        $userJob_array = $flag;
+        $Database = new DatabaseModel();
+        $db = $Database->getDb();
         
-        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . implode($userJob_array));
-        return $userJob_array;
+        $ds = new UserJobDataService($db);
+        
+        // flag is rows affected
+        $flag = $ds->update($updatedJob);
+        
+        $db = null;
+        
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
+        return $flag;
+    }
+    
+    function remove($partialJob)
+    {
+        Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $partialJob);
+        
+        $Database = new DatabaseModel();
+        $db = $Database->getDb();
+        
+        $ds = new UserJobDataService($db);
+        
+        // flag is rows affected
+        $flag = $ds->delete($partialJob);
+        
+        $db = null;
+        
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
+        return $flag;
     }
 }

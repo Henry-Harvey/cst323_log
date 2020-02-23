@@ -45,6 +45,16 @@ Route::get('/createUserJob', function () {
     return view('newUserJob');
 });
 
+// Navigates to the new user skill form from the profile page
+Route::get('/createUserSkill', function () {
+    return view('newUserSkill');
+});
+
+    // Navigates to the new user education form from the profile page
+Route::get('/createUserEducation', function () {
+    return view('newUserEducation');
+});
+
 /*
  * Account Controller Routes
  */
@@ -118,22 +128,41 @@ Route::post('/processEditPost', 'PostController@onEditPost');
 // Calls the user job controller create user job method from the newUserJob view form
 Route::post('/processCreateUserJob', 'UserJobController@onCreateUserJob');
 
+Route::post('/getTryDeleteUserJob', 'UserJobController@onTryDeleteUserJob');
 
+Route::post('/processDeleteUserJob', 'UserJobController@onDeleteUserJob');
 
+Route::post('/getEditUserJob', 'UserJobController@onGetEditUserJob');
 
-// Route for calling the skill view from the navbar
-Route::get('/createUserSkill', function () {
-    return view('newUserSkill');
-});
+Route::post('/processEditUserJob', 'UserJobController@onEditUserJob');
 
-// Route for calling the create skills method from the controller
+/*
+ * UserSkill Controller Routes
+ */
+
+// Calls the user skill controller create user skill method from the newUserSkill view form
 Route::post('/processCreateUserSkill', 'UserSkillController@onCreateUserSkill');
 
-// Route for calling the Education controller method from the navbar
-Route::get('/createUserEducation', function () {
-    return view('newUserEducation');
-});
+Route::post('/getTryDeleteUserSkill', 'UserSkillController@onTryDeleteUserSkill');
 
-// Route for calling the create education method from the controller
+Route::post('/processDeleteUserSkill', 'UserSkillController@onDeleteUserSkill');
+
+Route::post('/getEditUserSkill', 'UserSkillController@onGetEditUserSkill');
+
+Route::post('/processEditUserSkill', 'UserSkillController@onEditUserSkill');
+
+/*
+ * UserEducation Controller Routes
+ */
+
+// Calls the user education controller create user education method from the newUserEducation view form
 Route::post('/processCreateUserEducation', 'UserEducationController@onCreateUserEducation');
+
+Route::post('/getTryDeleteUserEducation', 'UserEducationController@onTryDeleteUserEducation');
+
+Route::post('/processDeleteUserEducation', 'UserEducationController@onDeleteUserEducation');
+
+Route::post('/getEditUserEducation', 'UserEducationController@onGetEditUserEducation');
+
+Route::post('/processEditUserEducation', 'UserEducationController@onEditUserEducation');
        

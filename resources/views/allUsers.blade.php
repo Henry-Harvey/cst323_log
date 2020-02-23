@@ -1,4 +1,4 @@
-<!-- This view displays a table with all users. The admin can click "suspend" or "delete" to perform those actions -->
+<!-- Displays a table with all users. The admin can click "suspend" or "delete" to perform those actions -->
 @extends('layouts.appmasterAdmin') 
 @section('title', 'Admin')
 

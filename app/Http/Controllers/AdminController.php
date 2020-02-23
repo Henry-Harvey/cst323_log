@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Exception;
+use App\Models\Services\Business\UserJobBusinessService;
+use App\Models\Services\Business\UserSkillBusinessService;
+use App\Models\Services\Business\UserEducationBusinessService;
 
 class AdminController extends Controller
 {
@@ -25,11 +28,17 @@ class AdminController extends Controller
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
             $bs = new AccountBusinessService();
+            
+            // flag is array
             $flag = $bs->getAllUsers();
 
-            if ($flag == null) {
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to home view");
-                return view('home');
+            if (empty($flag)) {
+                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
+                $data = [
+                    'process' => "Get All Users",
+                    'back' => "home"
+                ];
+                return view('error')->with($data);
             }
 
             $data = [
@@ -63,16 +72,22 @@ class AdminController extends Controller
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
-
             $user = $this->getUserFromId($request->input('idToShow'));
 
-            if ($user -= null) {
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to home view");
-                return view('home');
-            }
-
+            $jobBS = new UserJobBusinessService();
+            $skillBS = new UserSkillBusinessService();
+            $educationBS = new UserEducationBusinessService();
+            
+            // arrays may be empty, so dont check flags
+            $userJob_array = $jobBS->getAllJobsForUser($user);
+            $userSkill_array = $skillBS->getAllSkillsForUser($user);
+            $userEducation_array = $educationBS->getAllEducationForUser($user);
+            
             $data = [
-                'user' => $user
+                'user' => $user,
+                'userJob_array' => $userJob_array,
+                'userSkill_array' => $userSkill_array,
+                'userEducation_array' => $userEducation_array
             ];
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to profile view");
             return view('profile')->with($data);
@@ -137,7 +152,17 @@ class AdminController extends Controller
         $user = $this->getUserFromId($request->input('idToDelete'));
 
         $bs = new AccountBusinessService();
+        // flag is rows affected
         $flag = $bs->remove($user);
+        
+        if ($flag == 0) {
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
+            $data = [
+                'process' => "Remove User",
+                'back' => "getAllUsers"
+            ];
+            return view('error')->with($data);
+        }
 
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
         return $this->onGetAllUsers();
@@ -179,32 +204,67 @@ class AdminController extends Controller
         $user = $this->getUserFromId($request->input('idToToggle'));
 
         $bs = new AccountBusinessService();
+        // flag is rows affected
         $flag = $bs->toggleSuspension($user);
+        
+        if ($flag == 0) {
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
+            $data = [
+                'process' => "Toggle Suspend User",
+                'back' => "getAllUsers"
+            ];
+            return view('error')->with($data);
+        }
 
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . "with " . $flag);
         return $this->onGetAllUsers();
     }
-
+    
     private function getUserFromSession()
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
-
         $userid = Session::get('sp')->getUser_id();
         $partialUser = new UserModel($userid, "", "", "", "", 0, 0);
         $bs = new AccountBusinessService();
-        $user = $bs->getUser($partialUser);
-
+        
+        // flag is either user or rows found
+        $flag = $bs->getUser($partialUser);
+        
+        if (is_int($flag)) {
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
+            $data = [
+                'process' => "Get User",
+                'back' => "home"
+            ];
+            return view('error')->with($data);
+        }
+        
+        $user = $flag;
+        
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
         return $user;
     }
-
+    
     private function getUserFromId($userid)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         $partialUser = new UserModel($userid, "", "", "", "", 0, 0);
         $bs = new AccountBusinessService();
-        $user = $bs->getUser($partialUser);
-
+        
+        // flag is either user or rows found
+        $flag = $bs->getUser($partialUser);
+        
+        if (is_int($flag)) {
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
+            $data = [
+                'process' => "Get User",
+                'back' => "home"
+            ];
+            return view('error')->with($data);
+        }
+        
+        $user = $flag;
+        
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
         return $user;
     }
