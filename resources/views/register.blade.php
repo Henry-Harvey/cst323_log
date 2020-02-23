@@ -1,4 +1,4 @@
-<!-- This view displays a form that may be filled out and submitted, resulting in a new user being created with the filled in information -->
+<!-- Displays a form for registering a new account -->
 @extends('layouts.appmasterLoggedOut') 
 @section('title', 'Account Registration')
 

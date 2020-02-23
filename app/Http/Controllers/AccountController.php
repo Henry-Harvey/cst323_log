@@ -54,15 +54,19 @@ class AccountController extends Controller
 
             $bs = new AccountBusinessService();
 
+            // flag is rows affected
             $flag = $bs->register($u);
 
-            if ($flag == 1) {
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to login view");
-                return view('login');
-            } else {
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to register view");
-                return view('register');
+            if ($flag == 0) {
+                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
+                $data = [
+                    'process' => "Register",
+                    'back' => "register"
+                ];
+                return view('error')->with($data);
             }
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to login view");
+            return view('login');
         } catch (ValidationException $e2) {
             throw $e2;
         } catch (Exception $e) {
@@ -106,21 +110,24 @@ class AccountController extends Controller
 
             $bs = new AccountBusinessService();
 
+            // flag is either user or rows affected or -1
             $flag = $bs->login($c);
 
             if (is_int($flag)) {
                 if ($flag == - 1) {
+                    Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
                     $data = [
-                        'errorMsg' => "Account suspended"
+                        'process' => "(Suspended) Login",
+                        'back' => "login"
                     ];
-                    Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to loginFailed view. Account suspended");
-                    return view('loginFailed')->with($data);
+                    return view('error')->with($data);
                 }
+                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
                 $data = [
-                    'errorMsg' => "Account nout found"
+                    'process' => "Login",
+                    'back' => "login"
                 ];
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to loginFailed view. Account not found");
-                return view('loginFailed')->with($data);
+                return view('error')->with($data);
             }
 
             $sp = new SecurityPrinciple($flag->getId(), $flag->getFirst_name(), $flag->getRole());
@@ -172,20 +179,15 @@ class AccountController extends Controller
         try {
             $user = $this->getUserFromSession();
 
-            if ($user == null) {
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to home view");
-                return view('home');
-            }
-            
-            $jobBS = new UserJobBusinessService();            
-            $userJob_array = $jobBS->getAllJobsForUser($user);
-            
+            $jobBS = new UserJobBusinessService();
             $skillBS = new UserSkillBusinessService();
-            $userSkill_array = $skillBS->getAllSkillsForUser($user);
-            
             $educationBS = new UserEducationBusinessService();
-            $userEducation_array = $educationBS->getAllEducationForUser($user);
             
+            // arrays may be empty, so dont check flags
+            $userJob_array = $jobBS->getAllJobsForUser($user);
+            $userSkill_array = $skillBS->getAllSkillsForUser($user);
+            $userEducation_array = $educationBS->getAllEducationForUser($user);
+
             $data = [
                 'user' => $user,
                 'userJob_array' => $userJob_array,
@@ -222,16 +224,11 @@ class AccountController extends Controller
         try {
             $user = $this->getUserFromSession();
 
-            if ($user != null) {
-                $data = [
-                    'user' => $user
-                ];
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to editProfile view");
-                return view('editProfile')->with($data);
-            } else {
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to home view");
-                return view('home');
-            }
+            $data = [
+                'user' => $user
+            ];
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to editProfile view");
+            return view('editProfile')->with($data);
         } catch (Exception $e) {
             Log::error("Exception ", array(
                 "message" => $e->getMessage()
@@ -274,21 +271,22 @@ class AccountController extends Controller
 
             $bs = new AccountBusinessService();
 
+            // flag is rows affected
             $flag = $bs->editUser($u);
-
-            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
-            if ($flag > 0) {
-
-                $sp = Session::get('sp');
-
-                $sp->setFirst_name($first_name);
-
-                Session::put('sp', $sp);
-
-                return $this->onGetProfile();
-            } else {
-                return $this->onGetEditProfile();
+            if ($flag == 0) {
+                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
+                $data = [
+                    'process' => "Edit User",
+                    'back' => "getEditProfile"
+                ];
+                return view('error')->with($data);
             }
+
+            $sp = Session::get('sp');
+            $sp->setFirst_name($first_name);
+            Session::put('sp', $sp);
+
+            return $this->onGetProfile();
         } catch (ValidationException $e2) {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with validation error");
             throw $e2;
@@ -310,7 +308,21 @@ class AccountController extends Controller
         $userid = Session::get('sp')->getUser_id();
         $partialUser = new UserModel($userid, "", "", "", "", 0, 0);
         $bs = new AccountBusinessService();
-        $user = $bs->getUser($partialUser);
+
+        // flag is either user or rows found
+        $flag = $bs->getUser($partialUser);
+
+        if (is_int($flag)) {
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
+            $data = [
+                'process' => "Get User",
+                'back' => "home"
+            ];
+            return view('error')->with($data);
+        }
+
+        $user = $flag;
+
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
         return $user;
     }
@@ -320,7 +332,21 @@ class AccountController extends Controller
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         $partialUser = new UserModel($userid, "", "", "", "", 0, 0);
         $bs = new AccountBusinessService();
-        $user = $bs->getUser($partialUser);
+
+        // flag is either user or rows found
+        $flag = $bs->getUser($partialUser);
+
+        if (is_int($flag)) {
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
+            $data = [
+                'process' => "Get User",
+                'back' => "home"
+            ];
+            return view('error')->with($data);
+        }
+
+        $user = $flag;
+
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
         return $user;
     }

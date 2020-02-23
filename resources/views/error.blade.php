@@ -1,4 +1,5 @@
-<!-- Pass in: $process, $errorMsg, $back -->
+<!-- Displays a message for notifying the user if something didnt work and provides an easy way back -->
+<!-- Pass in: $process & $back -->
 @extends('layouts.appmaster')
 @section('title', '{{$process}} Error')
 

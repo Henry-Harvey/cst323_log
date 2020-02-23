@@ -1,12 +1,9 @@
+<!-- Displays a form for editting an existing job posting -->
 @extends('layouts.appmasterAdmin') 
 
 @section('content')
 <form action="processEditPost" method="POST">
 	{{ csrf_field() }}
-	
-    <!-- <div class="form-group">
-    <img src="https://mdbootstrap.com/img/Photos/Avatars/img%20%2810%29.jpg" class="rounded-circle">
-    </div> -->
     
     <div class="form-group">
 		<input type="hidden" class="form-control" id="id" placeholder="ID" value="{{$postToEdit->getId()}}" name="id">

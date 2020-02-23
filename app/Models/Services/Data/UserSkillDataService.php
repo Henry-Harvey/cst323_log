@@ -92,12 +92,7 @@ class UserSkillDataService implements DataServiceInterface
             $stmt = $this->db->prepare('SELECT * FROM user_skills
                                         WHERE USER_ID = :user_id');
             $stmt->bindParam(':user_id', $user_id);
-            $stmt->execute();
-            
-            if ($stmt->rowCount() == 0) {
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $stmt->rowCount() . " row(s) found");
-                return $stmt->rowCount();
-            }
+            $stmt->execute();        
             
             $userSkill_array = array();            
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -137,7 +132,7 @@ class UserSkillDataService implements DataServiceInterface
 
             $stmt = $this->db->prepare('UPDATE user_skills
                                         SET SKILL = :skill,
-                                            USER_ID = :user_id,
+                                            USER_ID = :user_id
                                         WHERE ID = :id');
             $stmt->bindParam(':skill', $skill);
             $stmt->bindParam(':user_id', $user_id);

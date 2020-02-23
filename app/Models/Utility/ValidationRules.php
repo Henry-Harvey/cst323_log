@@ -52,7 +52,7 @@ class ValidationRules
         return $rules;
     }
     
-    public function getJobHistoryRules()
+    public function getUserJobRules()
     {
         $rules = [
             'title' => 'Required | Between:1,50',
@@ -62,20 +62,21 @@ class ValidationRules
         return $rules;
     }
     
-    public function getEducationRules()
+    public function getUserSkillRules()
+    {
+        $rules = [
+            'skill' => 'Required | Between:1,50'
+        ];
+        return $rules;
+    }
+    
+    
+    public function getUserEducationRules()
     {
         $rules = [
             'school' => 'Required | Between:1,50',
             'degree' => 'Required | Between:1,50',
             'years' => 'Required | Between:1,50'
-        ];
-        return $rules;
-    }
-    
-    public function getSkillRules()
-    {
-        $rules = [
-            'skill' => 'Required | Between:1,50'
         ];
         return $rules;
     }

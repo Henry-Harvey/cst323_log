@@ -1,5 +1,5 @@
 .top-navbar {
-	background-color: #026cdf;
+	background-color: #343a40;
 	overflow: hidden;
 }
 
@@ -53,14 +53,15 @@
 
 .user-resume {
 	text-align: left;
-	margin-left: 300px;
+	margin-left: 20px;
+	margin-right: 20px;
 	padding-top: 10px;
 }
 
 html, body {
 	height: 100%;
-	color: rgb(218, 215, 210);
-	background-color: rgb(24, 26, 27);
+/* 	color: rgb(218, 215, 210);
+	background-color: rgb(24, 26, 27); */
 	position: relative;
 }
 
@@ -169,3 +170,4 @@ img{
 	display: inline;
 	vertical-align: middle;
 }
+

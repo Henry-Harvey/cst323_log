@@ -1,4 +1,4 @@
-<!-- This view displays a table with all users. The admin can click "suspend" or "delete" to perform those actions -->
+<!-- Displays a table with all job postings. The admin can add new job postings -->
 @extends('layouts.appmasterLoggedIn') 
 @section('title', 'Job Postings')
 
@@ -49,7 +49,7 @@
 					</form>
 				</td>			
 				<td>
-					<form action="processTryDeletePost" method="POST">
+					<form action="getTryDeletePost" method="POST">
 						{{ csrf_field() }}
 						 
 						<input type="hidden" name="idToDelete" value= "{{$post->getId()}}" />

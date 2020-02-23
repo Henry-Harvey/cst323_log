@@ -1,4 +1,4 @@
-
+<!-- Displays a form for a creating new user skill -->
 @extends('layouts.appmasterLoggedIn')
 
 @section('content')
