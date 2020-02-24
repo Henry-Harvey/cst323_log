@@ -1,4 +1,4 @@
-<!-- Displays a form for editting a user's porfile -->
+<!-- Displays a form for editting a user's profile -->
 @extends('layouts.appmasterLoggedIn') 
 
 @section('content')

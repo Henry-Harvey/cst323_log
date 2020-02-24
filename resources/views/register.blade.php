@@ -6,7 +6,6 @@
 
 <h2>Registration Form</h2>
 
-<!-- Form takes in user info and uses http post to persist it to the controller -->
 <form action="processRegister" method="POST">
 	{{ csrf_field() }}
 

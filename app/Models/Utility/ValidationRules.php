@@ -1,5 +1,6 @@
 <?php
 namespace App\Models\Utility;
+// this class contains the rules for form validation
 
 class ValidationRules
 {

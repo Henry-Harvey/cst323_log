@@ -20,13 +20,14 @@ class AccountController extends Controller
 
     /**
      * Takes in a request from register form
+     * Creates a ValidationRules and validates the request with the registration rules
      * Sets variables from the request inputs
      * Creates Credentials and User objects from the variables
-     * Creates a user business service
-     * Calls the register bs method, using the Credentials and User objects
-     * Sets a flag equal to the result
-     * If one row was inserted, return the login view
-     * Else return the register view
+     * Sets the user's credentials to the new credentials model
+     * Creates an account business service
+     * Calls the register bs method using the User object
+     * If flag is 0, return error page
+     * Return login page
      *
      * @param Request $request
      *            Implicit request
@@ -37,8 +38,10 @@ class AccountController extends Controller
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
             $vr = new ValidationRules();
+            // Creates a ValidationRules and validates the request with the registration rules
             $this->validate($request, $vr->getRegistrationRules());
 
+            // Sets variables from the request inputs
             $username = $request->input('username');
             $password = $request->input('password');
 
@@ -47,16 +50,20 @@ class AccountController extends Controller
             $location = $request->input('location');
             $summary = $request->input('summary');
 
+            // Creates Credentials and User objects from the variables
             $c = new CredentialsModel(0, $username, $password, 0);
-
             $u = new UserModel(0, $first_name, $last_name, $location, $summary, 0, 0);
+            // Sets the user's credentials to the new credentials model
             $u->setCredentials($c);
 
+            // Creates an account business service
             $bs = new AccountBusinessService();
 
+            // Calls the register bs method using the User object
             // flag is rows affected
             $flag = $bs->register($u);
 
+            // If flag is 0, return error page
             if ($flag == 0) {
                 Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
                 $data = [
@@ -65,6 +72,7 @@ class AccountController extends Controller
                 ];
                 return view('error')->with($data);
             }
+            // Return login page
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to login view");
             return view('login');
         } catch (ValidationException $e2) {
@@ -83,14 +91,14 @@ class AccountController extends Controller
 
     /**
      * Takes in a request from login form
+     * Creates a ValidationRules and validates the request with the login rules
      * Sets variables from the request inputs
      * Creates Credentials object from the variables
-     * Creates a user business service
-     * Calls the login bs method, using the Credentials object
-     * Sets a flag equal to the result
-     * If the flag is not null and is an int, the user was suspended. Return the loginFailed view and send the error message
-     * If the flag is not null and is not an int, set the user id and role sessions. Return the home view
-     * If the flag is null, the credentials dont match the database. Return the loginFailed view and send the error message
+     * Creates an account business service
+     * Calls the login bs method using the User object
+     * If flag is an int, returns error page
+     * Creates a SecurityPrinciple with flag (user) and sets session
+     * Returns home page
      *
      * @param Request $request
      *            Implicit request
@@ -100,19 +108,25 @@ class AccountController extends Controller
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
+            // Creates a ValidationRules and validates the request with the login rules
             $vr = new ValidationRules();
             $this->validate($request, $vr->getLoginRules());
 
+            // Sets variables from the request inputs
             $username = $request->input('username');
             $password = $request->input('password');
 
+            // Creates Credentials object from the variables
             $c = new CredentialsModel(0, $username, $password, 0);
 
+            // Creates an account business service
             $bs = new AccountBusinessService();
-
+            
+            // Calls the login bs method using the User object
             // flag is either user or rows affected or -1
             $flag = $bs->login($c);
 
+            // If flag is an int, returns error page
             if (is_int($flag)) {
                 if ($flag == - 1) {
                     Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
@@ -130,9 +144,11 @@ class AccountController extends Controller
                 return view('error')->with($data);
             }
 
+            // Creates a SecurityPrinciple with flag (user) and sets session
             $sp = new SecurityPrinciple($flag->getId(), $flag->getFirst_name(), $flag->getRole());
             Session::put('sp', $sp);
 
+            // Returns home page
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to home view");
             return view('home');
         } catch (ValidationException $e2) {
@@ -150,7 +166,7 @@ class AccountController extends Controller
     }
 
     /**
-     * Removes all sessions
+     * Removes securityPrinciple from session
      * Return the login view
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
@@ -158,18 +174,18 @@ class AccountController extends Controller
     public function onLogout()
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
+        // Removes securityPrinciple from session
         Session::forget('sp');
+        // Return the login view
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to login view");
         return view('login');
     }
 
     /**
-     * Creates a user business service
-     * Gets the user id from the session
-     * Calls the getUser bs method, using the user id
-     * Sets a flag equal to the result
-     * If the flag is not null, return the profile view and persist the user
-     * If the flag is null, return the home view
+     * Sets a user equal to this method's getUserFromSession method
+     * Creates job, skill, & education business services
+     * Calls each service's getAllFor methods and sets them equal to arrays
+     * Creates assoc array with the arrays and passes it to the profile view
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
      */
@@ -177,17 +193,21 @@ class AccountController extends Controller
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
+            // Sets a user equal to this method's getUserFromSession method
             $user = $this->getUserFromSession();
 
+            // Creates job, skill, & education business services
             $jobBS = new UserJobBusinessService();
             $skillBS = new UserSkillBusinessService();
             $educationBS = new UserEducationBusinessService();
             
+            // Calls each service's getAllFor methods and sets them equal to arrays
             // arrays may be empty, so dont check flags
             $userJob_array = $jobBS->getAllJobsForUser($user);
             $userSkill_array = $skillBS->getAllSkillsForUser($user);
             $userEducation_array = $educationBS->getAllEducationForUser($user);
 
+            // Creates assoc array with the arrays and passes it to the profile view
             $data = [
                 'user' => $user,
                 'userJob_array' => $userJob_array,
@@ -209,21 +229,19 @@ class AccountController extends Controller
     }
 
     /**
-     * Creates a user business service
-     * Gets the user id from the session
-     * Calls the getUser bs method, using the user id
-     * Sets a flag equal to the result
-     * If the flag is not null, return the edit profile view and persist the user
-     * If the flag is null, return the home view
-     *
+     * Sets a user equal to this method's getUserFromSession method
+     * Passes user to editProfile view
+     * 
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
      */
     public function onGetEditProfile()
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
+            // Sets a user equal to this method's getUserFromSession method
             $user = $this->getUserFromSession();
 
+            // Passes user to editProfile view
             $data = [
                 'user' => $user
             ];
@@ -242,23 +260,29 @@ class AccountController extends Controller
     }
 
     /**
+     * Takes in a request from editProfile form
+     * Creates a ValidationRules and validates the request with the profile edit rules
      * Sets variables equal to request inputs
      * Creates a user model from the variables
      * Creates a user business service
-     * Calls the editUser bs method, using the user
-     * Sets a flag equal to the result
-     * If the flag is not null, return the profile view and persist the user
-     * If the flag is null, return the edit profile view
-     *
+     * Calls the editUser bs method with the user
+     * If flag is 0, returns error page
+     * Updates session
+     * Returns this controller's getProfile method
+     * 
+     * @param Request $request
+     *            Implicit request
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
      */
     public function onEditProfile(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
+            // Creates a ValidationRules and validates the request with the profile edit rules
             $vr = new ValidationRules();
             $this->validate($request, $vr->getProfileEditRules());
 
+            // Sets variables equal to request inputs
             $id = $request->input('id');
             $first_name = $request->input('firstname');
             $last_name = $request->input('lastname');
@@ -267,12 +291,16 @@ class AccountController extends Controller
             $role = $request->input('role');
             $credentials_id = $request->input('credentials_id');
 
+            // Creates a user model from the variables
             $u = new UserModel($id, $first_name, $last_name, $location, $summary, $role, $credentials_id);
 
+            // Creates a user business service
             $bs = new AccountBusinessService();
 
+            // Calls the editUser bs method with the user
             // flag is rows affected
             $flag = $bs->editUser($u);
+            // If flag is 0, returns error page
             if ($flag == 0) {
                 Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
                 $data = [
@@ -282,10 +310,13 @@ class AccountController extends Controller
                 return view('error')->with($data);
             }
 
+            // Updates session
             $sp = Session::get('sp');
             $sp->setFirst_name($first_name);
             Session::put('sp', $sp);
 
+            // Returns this controller's getProfile method
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to Profile view");
             return $this->onGetProfile();
         } catch (ValidationException $e2) {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with validation error");
@@ -302,16 +333,31 @@ class AccountController extends Controller
         }
     }
 
+    /**
+     * Gets userid from session
+     * Creates a user with the id
+     * Creates an account business service
+     * Calls the bs getUser method
+     * If flag is an int, returns error page
+     * Returns user
+     *
+     * @return UserModel user
+     */
     private function getUserFromSession()
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
+        // Gets userid from session
         $userid = Session::get('sp')->getUser_id();
+        // Creates a user with the id
         $partialUser = new UserModel($userid, "", "", "", "", 0, 0);
+        // Creates an account business service
         $bs = new AccountBusinessService();
 
+        // Calls the bs getUser method
         // flag is either user or rows found
         $flag = $bs->getUser($partialUser);
 
+        // If flag is an int, returns error page
         if (is_int($flag)) {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
             $data = [
@@ -323,19 +369,35 @@ class AccountController extends Controller
 
         $user = $flag;
 
+        // Returns user
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
         return $user;
     }
 
+    /**
+     * Takes in a user id
+     * Creates a user with the id
+     * Creates an account business service
+     * Calls the bs getUser method
+     * If flag is an int, returns error page
+     * Returns user
+     *
+     * @param Integer $userid
+     * @return UserModel user
+     */
     private function getUserFromId($userid)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
+        // Creates a user with the id
         $partialUser = new UserModel($userid, "", "", "", "", 0, 0);
+        // Creates an account business service
         $bs = new AccountBusinessService();
 
+        // Calls the bs getUser method
         // flag is either user or rows found
         $flag = $bs->getUser($partialUser);
 
+        // If flag is an int, returns error page
         if (is_int($flag)) {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
             $data = [
@@ -347,6 +409,7 @@ class AccountController extends Controller
 
         $user = $flag;
 
+        // Returns user
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
         return $user;
     }

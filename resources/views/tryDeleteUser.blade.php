@@ -9,7 +9,7 @@
 <h5>Are you sure you want to delete this user?</h5>
 
 <div>
-	<table id="user" class="display">
+	<table id="user" class="table">
 
 		<thead>
 

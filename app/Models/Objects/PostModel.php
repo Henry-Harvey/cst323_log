@@ -1,8 +1,7 @@
 <?php
 namespace App\Models\Objects;
-//This model is for containing the information for people to log in to the site
+// This model is for containing the information for a job posting
 
-// product class
 class PostModel
 {
 

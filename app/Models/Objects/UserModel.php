@@ -1,9 +1,7 @@
 <?php
 namespace App\Models\Objects;
-
 // This model is for containing the information for people who use the site
 
-// product class
 class UserModel
 {
 

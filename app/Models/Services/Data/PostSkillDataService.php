@@ -94,11 +94,6 @@ class PostSkillDataService implements DataServiceInterface
             $stmt->bindParam(':post_id', $post_id);
             $stmt->execute();
 
-            if ($stmt->rowCount() == 0) {
-                Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $stmt->rowCount() . " row(s) found");
-                return $stmt->rowCount();
-            }
-
             $postSkill_array = array();
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $id = $result['ID'];

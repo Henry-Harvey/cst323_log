@@ -8,10 +8,6 @@
 <form action="processCreateUserJob" method="POST">
 {{ csrf_field() }}
 
-<!-- <div class="form-group">
-<img src="https://mdbootstrap.com/img/Photos/Avatars/img%20%2810%29.jpg" class="rounded-circle">
-</div> -->
-
 <div class="form-group">
 <label for="title">Title</label>
 <input style="width: 30%" type="text" class="form-control" id="title" placeholder="Title" name="title">

@@ -50,7 +50,7 @@ Route::get('/createUserSkill', function () {
     return view('newUserSkill');
 });
 
-    // Navigates to the new user education form from the profile page
+// Navigates to the new user education form from the profile page
 Route::get('/createUserEducation', function () {
     return view('newUserEducation');
 });
@@ -128,12 +128,16 @@ Route::post('/processEditPost', 'PostController@onEditPost');
 // Calls the user job controller create user job method from the newUserJob view form
 Route::post('/processCreateUserJob', 'UserJobController@onCreateUserJob');
 
+// Calls the user job controller try delete post method from the profile page
 Route::post('/getTryDeleteUserJob', 'UserJobController@onTryDeleteUserJob');
 
+// Calls the user job controller delete post method from the tryDeleteUserJob view form
 Route::post('/processDeleteUserJob', 'UserJobController@onDeleteUserJob');
 
+// Calls the user job controller get edit post method from the profile page
 Route::post('/getEditUserJob', 'UserJobController@onGetEditUserJob');
 
+// Calls the user job controller edit post method from the editUserJob view form
 Route::post('/processEditUserJob', 'UserJobController@onEditUserJob');
 
 /*
@@ -143,12 +147,16 @@ Route::post('/processEditUserJob', 'UserJobController@onEditUserJob');
 // Calls the user skill controller create user skill method from the newUserSkill view form
 Route::post('/processCreateUserSkill', 'UserSkillController@onCreateUserSkill');
 
+// Calls the user skill controller try delete post method from the profile page
 Route::post('/getTryDeleteUserSkill', 'UserSkillController@onTryDeleteUserSkill');
 
+// Calls the user skill controller delete post method from the tryDeleteUserSkill view form
 Route::post('/processDeleteUserSkill', 'UserSkillController@onDeleteUserSkill');
 
+// Calls the user skill controller get edit post method from the profile page
 Route::post('/getEditUserSkill', 'UserSkillController@onGetEditUserSkill');
 
+// Calls the user skill controller edit post method from the editUserSkill view form
 Route::post('/processEditUserSkill', 'UserSkillController@onEditUserSkill');
 
 /*
@@ -158,11 +166,15 @@ Route::post('/processEditUserSkill', 'UserSkillController@onEditUserSkill');
 // Calls the user education controller create user education method from the newUserEducation view form
 Route::post('/processCreateUserEducation', 'UserEducationController@onCreateUserEducation');
 
+// Calls the user education controller try delete post method from the profile page
 Route::post('/getTryDeleteUserEducation', 'UserEducationController@onTryDeleteUserEducation');
 
+// Calls the user education controller delete post method from the tryDeleteUserEducation view form
 Route::post('/processDeleteUserEducation', 'UserEducationController@onDeleteUserEducation');
 
+// Calls the user education controller get edit post method from the profile page
 Route::post('/getEditUserEducation', 'UserEducationController@onGetEditUserEducation');
 
+// Calls the user education controller edit post method from the editUserEducation view form
 Route::post('/processEditUserEducation', 'UserEducationController@onEditUserEducation');
        

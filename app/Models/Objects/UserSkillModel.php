@@ -1,5 +1,6 @@
 <?php
 namespace App\Models\Objects;
+// This model is for containing the user's skill information
 
 class UserSkillModel
 {

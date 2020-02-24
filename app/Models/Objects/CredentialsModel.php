@@ -2,7 +2,6 @@
 namespace App\Models\Objects;
 //This model is for containing the information for people to log in to the site
 
-// product class
 class CredentialsModel
 {
 

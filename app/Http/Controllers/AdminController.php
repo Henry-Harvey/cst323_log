@@ -15,11 +15,10 @@ class AdminController extends Controller
 {
 
     /**
-     * Creates a user business service
+     * Creates an account business service
      * Calls the getAllUsers bs method
-     * Sets a flag equal to the result
-     * If the flag is not null, return the admin view and persist the list of users
-     * If the flag is null, return the home view
+     * If flag is empty, return error page
+     * Passes array of users to allUsers view
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
      */
@@ -27,11 +26,14 @@ class AdminController extends Controller
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
+            // Creates an account business service
             $bs = new AccountBusinessService();
             
+            // Calls the getAllUsers bs method
             // flag is array
             $flag = $bs->getAllUsers();
 
+            // If flag is empty, return error page
             if (empty($flag)) {
                 Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
                 $data = [
@@ -41,6 +43,7 @@ class AdminController extends Controller
                 return view('error')->with($data);
             }
 
+            // Passes array of users to allUsers view
             $data = [
                 'allUsers_array' => $flag
             ];
@@ -59,30 +62,34 @@ class AdminController extends Controller
     }
 
     /**
-     * Creates a user business service
-     * Gets the user id from the request
-     * Calls the getUser bs method, using the user id
-     * Sets a flag equal to the result
-     * If the flag is not null, return the profile view and persist the user
-     * If the flag is null, return the home view
-     *
+     * Takes in a request from allUsers view
+     * Sets a user equal to this method's getUserFromId method, using the request input
+     * Creates job, skill, & education business services
+     * Calls each service's getAllFor methods and sets them equal to arrays
+     * Passes arrays and user to the profile view
+     * @param Request $request
+     *            Implicit request
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
      */
     public function onGetOtherProfile(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
+            // Sets a user equal to this method's getUserFromId method, using the request input
             $user = $this->getUserFromId($request->input('idToShow'));
 
+            // Creates job, skill, & education business services
             $jobBS = new UserJobBusinessService();
             $skillBS = new UserSkillBusinessService();
             $educationBS = new UserEducationBusinessService();
             
+            // Calls each service's getAllFor methods and sets them equal to arrays
             // arrays may be empty, so dont check flags
             $userJob_array = $jobBS->getAllJobsForUser($user);
             $userSkill_array = $skillBS->getAllSkillsForUser($user);
             $userEducation_array = $educationBS->getAllEducationForUser($user);
             
+            // Passes arrays and user to the profile view
             $data = [
                 'user' => $user,
                 'userJob_array' => $userJob_array,
@@ -105,12 +112,8 @@ class AdminController extends Controller
 
     /**
      * Takes in a request from admin view
-     * Sets variable from the request input
-     * Creates User object from the variable
-     * Creates a user business service
-     * Calls the getUser bs method, using the User object
-     * Sets the result equal to user
-     * Returns the tryDelete view and persist the user
+     * Sets a user equal to this method's getUserFromId method, using the request input
+     * Passes the user to the tryDeleteUser view
      *
      * @param Request $request
      *            Implicit request
@@ -120,26 +123,24 @@ class AdminController extends Controller
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
 
+        // Sets a user equal to this method's getUserFromId method, using the request input
         $user = $this->getUserFromId($request->input('idToDelete'));
 
+        // Passes the user to the tryDeleteUser view
         $data = [
             'userToDelete' => $user
         ];
-
-        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to tryDelete view");
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to tryDeleteUser view");
         return view('tryDeleteUser')->with($data);
     }
 
     /**
-     * Takes in a request from tryDelete view
-     * Sets variable from the request input
-     * Creates User object from the variable
-     * Creates a user business service
-     * Calls the getUser bs method, using the User object
-     * Sets the result equal to user
+     * Takes in a request from tryDeleteUser view
+     * Sets a user equal to this method's getUserFromId method, using the request input
+     * Creates an account business service
      * Calls the remove bs method
-     * Sets a flag equal to the result
-     * Returns the admin view
+     * If flag is 0, returns error page
+     * Returns this method's onGetAllUsers method
      *
      * @param Request $request
      *            Implicit request
@@ -149,12 +150,17 @@ class AdminController extends Controller
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
 
+        // Sets a user equal to this method's getUserFromId method, using the request input
         $user = $this->getUserFromId($request->input('idToDelete'));
 
+        // Creates an account business service
         $bs = new AccountBusinessService();
+        
+        // Calls the remove bs method
         // flag is rows affected
         $flag = $bs->remove($user);
         
+        // If flag is 0, returns error page
         if ($flag == 0) {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
             $data = [
@@ -164,34 +170,42 @@ class AdminController extends Controller
             return view('error')->with($data);
         }
 
+        // Returns this method's onGetAllUsers method
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
         return $this->onGetAllUsers();
     }
 
+    /**
+     * Takes in a request from allUsers view
+     * Sets a user equal to this method's getUserFromId method, using the request input
+     * Passes the user to the tryToggleSuspension view
+     *
+     * @param Request $request
+     *            Implicit request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onTryToggleSuspension(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
 
+        // Sets a user equal to this method's getUserFromId method, using the request input
         $user = $this->getUserFromId($request->input('idToToggle'));
 
+        // Passes the user to the tryToggleSuspension view
         $data = [
             'userToToggle' => $user
         ];
-
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to tryToggleSuspension view");
         return view('tryToggleSuspension')->with($data);
     }
 
     /**
-     * Takes in a request from tryDelete view
-     * Sets variable from the request input
-     * Creates User object from the variable
-     * Creates a user business service
-     * Calls the getUser bs method, using the User object
-     * Sets the result equal to user
-     * Calls the toggleSuspendUser bs method
-     * Sets a flag equal to the result
-     * Returns the admin view
+     * Takes in a request from tryToggleSuspension view
+     * Sets a user equal to this method's getUserFromId method, using the request input
+     * Creates an account business service
+     * Calls the toggleSuspend bs method
+     * If flag is 0, returns error page
+     * Returns this method's onGetAllUsers method
      *
      * @param Request $request
      *            Implicit request
@@ -201,12 +215,17 @@ class AdminController extends Controller
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
 
+        // Sets a user equal to this method's getUserFromId method, using the request input
         $user = $this->getUserFromId($request->input('idToToggle'));
 
+        // Creates an account business service
         $bs = new AccountBusinessService();
+        
+        // Calls the toggleSuspend bs method
         // flag is rows affected
         $flag = $bs->toggleSuspension($user);
         
+        // If flag is 0, returns error page
         if ($flag == 0) {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
             $data = [
@@ -216,6 +235,7 @@ class AdminController extends Controller
             return view('error')->with($data);
         }
 
+        // Returns this method's onGetAllUsers method
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . "with " . $flag);
         return $this->onGetAllUsers();
     }
@@ -245,15 +265,30 @@ class AdminController extends Controller
         return $user;
     }
     
+    /**
+     * Takes in a user id
+     * Creates a user with the id
+     * Creates an account business service
+     * Calls the bs getUser method
+     * If flag is an int, returns error page
+     * Returns user
+     *
+     * @param Integer $userid
+     * @return UserModel user
+     */
     private function getUserFromId($userid)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
+        // Creates a user with the id
         $partialUser = new UserModel($userid, "", "", "", "", 0, 0);
+        // Creates an account business service
         $bs = new AccountBusinessService();
         
+        // Calls the bs getUser method
         // flag is either user or rows found
         $flag = $bs->getUser($partialUser);
         
+        // If flag is an int, returns error page
         if (is_int($flag)) {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
             $data = [
@@ -265,6 +300,7 @@ class AdminController extends Controller
         
         $user = $flag;
         
+        // Returns user
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $user);
         return $user;
     }
