@@ -1,3 +1,4 @@
+<!-- Displays a form for editting a user's skill -->
 @extends('layouts.appmasterLoggedIn') 
 
 @section('content')

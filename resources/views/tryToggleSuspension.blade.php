@@ -9,7 +9,7 @@
 <h5>Are you sure you want to toggle the suspension on this user?</h5>
 
 <div>
-	<table id="user" class="display">
+	<table id="user" class="table">
 
 		<thead>
 
@@ -29,7 +29,6 @@
 		<tbody>
 
 			<tr>
-			<!-- $userToDelete comes from AccountController.onTryDeleteUser() -->
 				<td>{{$userToToggle->getId()}}</td>
 				<td>{{$userToToggle->getFirst_name()}}</td>
 				<td>{{$userToToggle->getLast_name()}}</td>

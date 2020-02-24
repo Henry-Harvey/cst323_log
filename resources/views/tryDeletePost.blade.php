@@ -9,7 +9,7 @@
 <h5>Are you sure you want to delete this post?</h5>
 
 <div>
-	<table id="post" class="display">
+	<table id="post" class="table">
 
 		<thead>
 

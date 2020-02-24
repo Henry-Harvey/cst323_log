@@ -1,5 +1,6 @@
 <?php
 namespace App\Models\Utility;
+// This class contains the information that is stored in the session
 
 class SecurityPrinciple
 {

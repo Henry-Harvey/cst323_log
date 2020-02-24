@@ -13,25 +13,44 @@ use App\Models\Services\Business\UserEducationBusinessService;
 class UserEducationController extends Controller
 {
 
+    /**
+     * Takes in a request from newUserEducation form
+     * Creates a ValidationRules and validates the request with the user education rules
+     * Sets variables from the request inputs
+     * Creates UserEducation model from the variables
+     * Creates UserEducation business service
+     * Calls createEducation bs method
+     * If flag equals 0, returns error page
+     * Creates a new account controller and returns its onGetProfile method
+     *
+     * @param Request $request
+     *            Implicit request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onCreateUserEducation(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
+            // Creates a ValidationRules and validates the request with the user education rules
             $vr = new ValidationRules();
-
             $this->validate($request, $vr->getUserEducationRules());
 
+            // Sets variables from the request inputs
             $school = $request->input('school');
             $degree = $request->input('degree');
             $years = $request->input('years');
 
+            // Creates UserEducation model from the variables
             $education = new UserEducationModel(0, $school, $degree, $years, Session::get('sp')->getUser_id());
 
+            // Creates UserEducation business service
             $bs = new UserEducationBusinessService();
 
+            // Calls createEducation bs method
             // flag is rows affected
             $flag = $bs->createEducation($education);
 
+            // If flag equals 0, returns error page
             if ($flag == 0) {
                 Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
                 $data = [
@@ -40,8 +59,9 @@ class UserEducationController extends Controller
                 ];
                 return view('error')->with($data);
             }
-            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
+            // Creates a new account controller and returns its onGetProfile method
             $c = new AccountController();
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
             return $c->onGetProfile();
         } catch (ValidationException $e2) {
             throw $e2;
@@ -57,13 +77,23 @@ class UserEducationController extends Controller
         }
     }
     
+    /**
+     * Takes in a request from profile view
+     * Sets a userEducation equal to this method's getUserEducationFromId method, using the request input
+     * Passes the userEducation to editUserEducation view
+     *
+     * @param Request $request
+     *            Implicit request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onGetEditUserEducation(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
-        try {
-            
+        try {            
+            // Sets a userEducation equal to this method's getUserEducationFromId method, using the request input
             $userEducationToEdit = $this->getUserEducationFromId($request->input('idToEdit'));
             
+            // Passes the userEducation to editUserEducation view
             $data = [
                 'userEducationToEdit' => $userEducationToEdit
             ];
@@ -81,24 +111,45 @@ class UserEducationController extends Controller
         }
     }
     
+    /**
+     * Takes in a request from editUserEducation form
+     * Creates a ValidationRules and validates the request with the user education rules
+     * Sets variables equal to request inputs
+     * Creates a user education model from the variables
+     * Creates a user education business service
+     * Calls the editEducation bs method with the post
+     * If flag is is not equal to 1, returns error page
+     * Creates a new account controller and returns its onGetProfile method
+     *
+     * @param Request $request
+     *            Implicit request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onEditUserEducation(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         try {
+            // Creates a ValidationRules and validates the request with the user education rules
             $vr = new ValidationRules();
             $this->validate($request, $vr->getUserEducationRules());
             
+            // Sets variables equal to request inputs
             $id = $request->input('id');
             $school = $request->input('school');
             $degree = $request->input('degree');
             $years = $request->input('years');
             
+            // Creates a user education model from the variables
             $education = new UserEducationModel($id, $school, $degree, $years, Session::get('sp')->getUser_id());
             
+            // Creates a user education business service
             $bs = new UserEducationBusinessService();
             
+            // Calls the editEducation bs method with the post
             // flag is rows affected
             $flag = $bs->editEducation($education);
+            
+            // If flag is is not equal to 1, returns error page
             if ($flag != 1) {
                 Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
                 $data = [
@@ -108,8 +159,9 @@ class UserEducationController extends Controller
                 return view('error')->with($data);
             }
             
-            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
+            // Creates a new account controller and returns its onGetProfile method
             $c = new AccountController();
+            Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
             return $c->onGetProfile();
         } catch (ValidationException $e2) {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with validation error");
@@ -126,31 +178,57 @@ class UserEducationController extends Controller
         }
     }
     
+    /**
+     * Takes in a request from Profile view
+     * Sets a user education equal to this method's getUserEducationFromId method, using the request input
+     * Passes the user education to the tryDeleteUserEducation view
+     *
+     * @param Request $request
+     *            Implicit request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onTryDeleteUserEducation(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         
+        // Sets a user education equal to this method's getUserEducationFromId method, using the request input
         $education = $this->getUserEducationFromId($request->input('idToDelete'));
         
+        // Passes the user education to the tryDeleteUserEducation view
         $data = [
             'educationToDelete' => $education
-        ];
-        
+        ];       
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to tryDeleteUserEducation view");
         return view('tryDeleteUserEducation')->with($data);
     }
     
+    /**
+     * Takes in a request from tryDeleteUserEducation view
+     * Sets a user education equal to this method's getUserEducationFromId method, using the request input
+     * Creates a user education business service
+     * Calls the remove bs method
+     * If flag is not equal to 1, returns error page
+     * Creates a new account controller and returns its onGetProfile method
+     *
+     * @param Request $request
+     *            Implicit request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory result view
+     */
     public function onDeleteUserEducation(Request $request)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
         
+        // Sets a user education equal to this method's getUserEducationFromId method, using the request input
         $education = $this->getUserEducationFromId($request->input('idToDelete'));
         
+        // Creates a user education business service
         $bs = new UserEducationBusinessService();
         
+        // Calls the remove bs method
         // flag is rows affected
         $flag = $bs->remove($education);
         
+        // If flag is not equal to 1, returns error page
         if ($flag != 1) {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
             $data = [
@@ -160,20 +238,37 @@ class UserEducationController extends Controller
             return view('error')->with($data);
         }
         
-        
-        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
+        // Creates a new account controller and returns its onGetProfile method
         $c = new AccountController();
+        Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $flag);
         return $c->onGetProfile();
     }
     
+    /**
+     * Takes in an education id
+     * Creates a user education with the id
+     * Creates a user education business service
+     * Calls the bs getEducation method
+     * If flag is an int, returns error page
+     * Returns user education
+     *
+     * @param Integer $educationid
+     * @return UserEducationModel user
+     */
     private function getUserEducationFromId($educationid)
     {
         Log::info("\Entering " . substr(strrchr(__METHOD__, "\\"), 1));
+        // Creates a user education with the id
         $partialUserEducation = new UserEducationModel($educationid, "", "", "", "");
+        
+        // Creates a user education business service
         $bs = new UserEducationBusinessService();
+        
+        // Calls the bs getEducation method
         // flag is either UserEducationModel or rows found
         $flag = $bs->getEducation($partialUserEducation);
         
+        // If flag is an int, returns error page
         if (is_int($flag)) {
             Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " to error view. Flag: " . $flag);
             $data = [
@@ -183,6 +278,7 @@ class UserEducationController extends Controller
             return view('error')->with($data);
         }
         
+        // Returns user education
         $education = $flag;
         
         Log::info("/Exiting  " . substr(strrchr(__METHOD__, "\\"), 1) . " with " . $education);

@@ -1,4 +1,4 @@
-<!-- Displays a form for loggin in -->
+<!-- Displays a form for logging in -->
 @extends('layouts.appmasterLoggedOut') 
 @section('title', 'Account Login')
 
