@@ -12,7 +12,7 @@ class MyLogger3 implements ILogger{
     {
         if(self::$logger == null){ 
             self::$logger = new Logger('MyAppLoggly'); 
-            $loggly = new LogglyHandler('6ec9d479-76ef-4406-853f-5a284c8909e2/tag/monolog');
+            $loggly = new LogglyHandler('6ec9d479-76ef-4406-853f-5a284c8909e2/tag/cst323_logfile_heroku_upload');
             $loggly->setFormatter(new LineFormatter("%datetime% : %level_name% : %message% %context%\n", "g:iA n/j/Y"));
 
             self::$logger->pushHandler($loggly);
