@@ -2,20 +2,20 @@
 namespace App\Models\Services\Utility;
 
 use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+use Monolog\Handler\LogglyHandler;
 use Monolog\Formatter\LineFormatter;
 
-class MyLogger2 implements ILogger{
+class MyLogger3 implements ILogger{
     private static $logger = null;   
 
     public static function getLogger()
     {
-        if(self::$logger == null){
-            self::$logger = new Logger('MyApp');
-            $stream = new StreamHandler('storage/logs/myapp.log', Logger::INFO);
-            $stream->setFormatter(new LineFormatter("%datetime% : %level_name% : %message% %context%\n", "g:iA n/j/Y"));
-            
-            self::$logger->pushHandler($stream);
+        if(self::$logger == null){ 
+            self::$logger = new Logger('MyAppLoggly'); 
+            $loggly = new LogglyHandler('6ec9d479-76ef-4406-853f-5a284c8909e2/tag/monolog');
+            $loggly->setFormatter(new LineFormatter("%datetime% : %level_name% : %message% %context%\n", "g:iA n/j/Y"));
+
+            self::$logger->pushHandler($loggly);
         }
         return self::$logger;
     }

@@ -1,31 +1,31 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Services\Utility\MyLogger2;
+use App\Models\Services\Utility\MyLogger3;
 
 class LogController extends Controller
 {
     public function debug()
     {
-        MyLogger2::debug("Logged");
+        MyLogger3::debug("Logged");
         return view('index');
     }
 
     public function info()
     {
-        MyLogger2::info("Logged");
+        MyLogger3::info("Logged");
         return view('index');
     }
     
     public function warning()
     {
-        MyLogger2::warning("Logged");
+        MyLogger3::warning("Logged");
         return view('index');
     }
     
     public function error()
     {
-        MyLogger2::error("Logged");
+        MyLogger3::error("Logged");
         return view('index');
     }
 }
